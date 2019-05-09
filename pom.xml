@@ -209,15 +209,12 @@
         <dependency>
             <groupId>jcrapi</groupId>
             <artifactId>jcrapi</artifactId>
-            <!--version>v8.3.13-RC1</version-->
-            <!--version>v10.6.2-RC1</version-->
-            <!--version>v12.0.160-RC3</version-->
-            <version>v12.0.160-RC5</version>
+            <version>v12.0.236-RC5</version>
         </dependency>
         <dependency>
             <groupId>jcrapi2</groupId>
             <artifactId>jcrapi2</artifactId>
-            <version>1.0.0-M3</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.amazon.alexa</groupId>

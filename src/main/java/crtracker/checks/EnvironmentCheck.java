@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import crtracker.Config;
-import crtracker.service.MessageService;
 import crtracker.job.AbstractJob;
+import crtracker.service.MessageService;
 
 public class EnvironmentCheck extends AbstractJob {
 

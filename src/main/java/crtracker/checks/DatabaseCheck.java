@@ -4,7 +4,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.mili.utils.sql.service.ServiceFactory;
 
-import java.io.IOException;
 import crtracker.Config;
 import crtracker.job.AbstractJob;
 import crtracker.persistency.dao.MeasureDao;

@@ -17,9 +17,9 @@ package crtracker.persistency.model;
  * limitations under the License.
  */
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Embeddable;
 
 /**
  * @author Michael Lieshoff

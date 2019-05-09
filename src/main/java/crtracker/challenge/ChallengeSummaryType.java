@@ -2,12 +2,7 @@ package crtracker.challenge;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.DateTime;
-
 import java.util.Map;
-import crtracker.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

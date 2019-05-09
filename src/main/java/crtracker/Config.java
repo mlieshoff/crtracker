@@ -9,6 +9,7 @@ import org.hibernate.service.ServiceRegistry;
 
 import java.util.Properties;
 import javax.security.auth.login.LoginException;
+import crtracker.api.ApiWrapper;
 import crtracker.bot.DiscordApi;
 import crtracker.challenge.ChallengeDefinition;
 import crtracker.challenge.RunningChallenge;
@@ -17,7 +18,6 @@ import crtracker.persistency.model.MeasureId;
 import crtracker.persistency.model.NumberMeasure;
 import crtracker.persistency.model.StringMeasure;
 import crtracker.persistency.model.TextMeasure;
-import jcrapi2.Api;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -66,8 +66,13 @@ public class Config {
         return new DiscordApi(config, credentials);
     }
 
-    public Api createApi() {
-        return new Api(config.getProperty("official.cr.api.url"), credentials.getProperty("official.cr.api.token"));
+    public ApiWrapper createApiWrapper() {
+        return new ApiWrapper(
+                config.getProperty("official.cr.api.url"),
+                credentials.getProperty("official.cr.api.token"),
+                config.getProperty("royal.cr.api.url"),
+                credentials.getProperty("royal.cr.api.token")
+        );
     }
 
 }

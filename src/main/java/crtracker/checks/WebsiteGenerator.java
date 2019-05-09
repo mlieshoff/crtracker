@@ -17,21 +17,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import crtracker.Config;
-import crtracker.CrTracker;
 import crtracker.Utils;
+import crtracker.job.AbstractJob;
 import crtracker.persistency.Role;
+import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
 import crtracker.persistency.model.NumberMeasure;
 import crtracker.persistency.model.StringMeasure;
+import crtracker.persistency.model.TextMeasure;
 import crtracker.service.FtpService;
 import crtracker.service.MessageService;
-import crtracker.job.AbstractJob;
-import crtracker.persistency.dao.MeasureDao;
 import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 public class WebsiteGenerator extends AbstractJob {
 
@@ -57,7 +54,7 @@ public class WebsiteGenerator extends AbstractJob {
         Session session = config.createSession();
         Transaction transaction = session.beginTransaction();
         try {
-            StringMeasure members = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.CLAN_MEMBERS, clanTag);
+            TextMeasure members = measureDao.getCurrentTextMeasure(session, CrTrackerTypes.CLAN_MEMBERS, clanTag);
             Map<String, String> tag2Name = resolveMemberTags(session, asList(members.getValue().split(",")));
             List<HighscoreEntry> model = new ArrayList<>();
             Pair<DateTime, DateTime> calendarWeek = Utils.getCalendarWeekFromTo(new Date());

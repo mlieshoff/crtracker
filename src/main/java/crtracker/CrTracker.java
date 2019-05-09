@@ -15,7 +15,6 @@ import crtracker.checks.DatabaseCheck;
 import crtracker.checks.EnvironmentCheck;
 import crtracker.checks.WebsiteGenerator;
 import crtracker.job.Job;
-import crtracker.migration.DuplicateRemover;
 import crtracker.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

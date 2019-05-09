@@ -1,9 +1,7 @@
 package crtracker.challenge;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,22 +10,14 @@ import org.hibernate.Transaction;
 import org.joda.time.DateTime;
 import org.mili.utils.sql.service.ServiceFactory;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import crtracker.Config;
-import crtracker.CrTracker;
 import crtracker.Utils;
-import crtracker.checks.WebsiteGenerator;
 import crtracker.job.AbstractJob;
-import crtracker.persistency.Role;
 import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
-import crtracker.persistency.model.NumberMeasure;
-import crtracker.persistency.model.StringMeasure;
 import crtracker.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 
