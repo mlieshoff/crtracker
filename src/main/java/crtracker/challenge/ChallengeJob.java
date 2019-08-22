@@ -1,5 +1,7 @@
 package crtracker.challenge;
 
+import static crtracker.Utils.isInRange;
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import org.apache.commons.collections4.MapUtils;
@@ -12,9 +14,9 @@ import org.mili.utils.sql.service.ServiceFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
+import java.util.stream.Collectors;
 import crtracker.Config;
-import crtracker.Utils;
 import crtracker.job.AbstractJob;
 import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
@@ -39,7 +41,8 @@ public class ChallengeJob extends AbstractJob {
         clanTag = config.getConfig().getProperty("crtracker.clan.tag");
     }
 
-    @Override public long getTimeout() {
+    @Override
+    public long getTimeout() {
         return 60000;
     }
 
@@ -51,8 +54,9 @@ public class ChallengeJob extends AbstractJob {
             Map<Long, ChallengeDefinition> challengeDefinitions = challengeDao.getActiveChallengeDefinitions(session);
             if (MapUtils.isNotEmpty(challengeDefinitions)) {
                 DateTime now = new DateTime();
-                stopAndComputeChallengesIfNeeded(session, challengeDefinitions, now);
-                startNewChallengesIfNeeded(session, challengeDefinitions, now);
+                List<RunningChallenge> runningChallenges = challengeDao.getRunningChallenges(session);
+                stopAndComputeChallengesIfNeeded(session, runningChallenges, challengeDefinitions, now);
+                startNewChallengesIfNeeded(session, runningChallenges, challengeDefinitions, now);
             }
             transaction.commit();
         } catch (Exception e) {
@@ -66,14 +70,14 @@ public class ChallengeJob extends AbstractJob {
         }
     }
 
-    private void stopAndComputeChallengesIfNeeded(Session session, Map<Long, ChallengeDefinition> challengeDefinitions,
-            DateTime now) {
-        List<RunningChallenge> runningChallenges = challengeDao.getRunningChallenges(session);
+    private void stopAndComputeChallengesIfNeeded(Session session, List<RunningChallenge> runningChallenges,
+            Map<Long, ChallengeDefinition> challengeDefinitions, DateTime now) {
         if (isNotEmpty(runningChallenges)) {
             for (RunningChallenge runningChallenge : runningChallenges) {
                 ChallengeDefinition challengeDefinition = challengeDefinitions.get(runningChallenge.getChallengeId());
-                ImmutablePair<DateTime, DateTime> activationRange = new ImmutablePair<>(new DateTime(runningChallenge.getStart()), new DateTime(runningChallenge.getEnd()));
-                if (!Utils.isInRange(now, activationRange)) {
+                ImmutablePair<DateTime, DateTime> activationRange = new ImmutablePair<>(
+                        new DateTime(runningChallenge.getStart()), new DateTime(runningChallenge.getEnd()));
+                if (!isInRange(now, activationRange)) {
                     runningChallenge.setChallengeStatus(ChallengeStatus.ENDED.getCode());
                     session.merge(runningChallenge);
                     summarizeChallenge(session, challengeDefinition, runningChallenge, activationRange);
@@ -84,32 +88,27 @@ public class ChallengeJob extends AbstractJob {
 
     private void summarizeChallenge(Session session, ChallengeDefinition challengeDefinition,
             RunningChallenge runningChallenge, ImmutablePair<DateTime, DateTime> activationRange) {
-        if ("DONATIONS".equalsIgnoreCase(challengeDefinition.getObjectives())) {
-            List<SummarizeNumberEntry> summarizeNumberEntries = new DonationChallengeHandler().summarize(session, clanTag, challengeDefinition, runningChallenge, activationRange);
-            // get top x
-
-            // save results
-            for (SummarizeNumberEntry summarizeNumberEntry : summarizeNumberEntries) {
-                String id = String.format("%s:%s", runningChallenge.getUuid(), summarizeNumberEntry.getMemberTag());
-                measureDao.updateNumberMeasure(session, id, CrTrackerTypes.CHALLENGE.getCode(), summarizeNumberEntry.getValue());
-            }
+        List<SummarizeNumberEntry> summarizeNumberEntries = new BasicChallengeHandler()
+                .summarize(session, clanTag, challengeDefinition, runningChallenge, activationRange);
+        for (SummarizeNumberEntry summarizeNumberEntry : summarizeNumberEntries) {
+            String id = String.format("%s:%s", runningChallenge.getUuid(), summarizeNumberEntry.getMemberTag());
+            measureDao.updateNumberMeasure(session, id, CrTrackerTypes.CHALLENGE.getCode(),
+                    summarizeNumberEntry.getValue());
         }
     }
 
-    private void startNewChallengesIfNeeded(Session session, Map<Long, ChallengeDefinition> challengeDefinitions,
-            DateTime now) {
+    private void startNewChallengesIfNeeded(Session session, List<RunningChallenge> runningChallenges,
+            Map<Long, ChallengeDefinition> challengeDefinitions, DateTime now) {
+        Set<Long> runningChallengeIds = runningChallenges.stream()
+                .map(runningChallenge -> runningChallenge.getChallengeId()).collect(Collectors.toSet());
         for (Map.Entry<Long, ChallengeDefinition> entry : challengeDefinitions.entrySet()) {
             long challengeId = entry.getKey();
             ChallengeDefinition challengeDefinition = entry.getValue();
             Pair<DateTime, DateTime> activationRange = challengeDefinition.getActivationRange(now);
-            if (Utils.isInRange(now, activationRange)) {
-                RunningChallenge runningChallenge = new RunningChallenge(
-                        UUID.randomUUID().toString(),
-                        challengeId,
-                        ChallengeStatus.RUNNING.getCode(),
-                        activationRange.getLeft().toDate(),
-                        activationRange.getRight().toDate()
-                );
+            if (!runningChallengeIds.contains(challengeId) && isInRange(now, activationRange)) {
+                RunningChallenge runningChallenge = new RunningChallenge(randomUUID().toString(), challengeId,
+                        ChallengeStatus.RUNNING.getCode(), activationRange.getLeft().toDate(),
+                        activationRange.getRight().toDate());
                 session.save(runningChallenge);
             }
         }

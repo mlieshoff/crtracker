@@ -57,11 +57,13 @@ public class WebsiteGenerator extends AbstractJob {
             TextMeasure members = measureDao.getCurrentTextMeasure(session, CrTrackerTypes.CLAN_MEMBERS, clanTag);
             Map<String, String> tag2Name = resolveMemberTags(session, asList(members.getValue().split(",")));
             List<HighscoreEntry> model = new ArrayList<>();
+            List<HighscoreEntry> tournamentModel = new ArrayList<>();
             Pair<DateTime, DateTime> calendarWeek = Utils.getCalendarWeekFromTo(new Date());
             for (Map.Entry<String, String> entry : tag2Name.entrySet()) {
                 StringMeasure idMeasure = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.ID, entry.getKey());
                 NumberMeasure donationMeasure = measureDao.getLastNumberMeasure(session, CrTrackerTypes.MEMBER_DONATIONS, entry.getKey(), calendarWeek.getLeft(), calendarWeek.getRight());
                 NumberMeasure roleMeasure = measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_ROLE, entry.getKey());
+                NumberMeasure tournamentMeasure = measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.INTERN_TOURNAMENT, entry.getKey());
 
                 Date joiningDate = idMeasure.getMeasureId().getModifiedAt();
 
@@ -75,7 +77,10 @@ public class WebsiteGenerator extends AbstractJob {
                     donations = donationMeasure.getValue();
                 }
 
+                long tournamentCrowns = tournamentMeasure != null ? tournamentMeasure.getValue() : 0;
+
                 model.add(new HighscoreEntry(entry.getKey(), entry.getValue(), donations, role, joiningDate));
+                tournamentModel.add(new HighscoreEntry(entry.getKey(), entry.getValue(), tournamentCrowns, role, joiningDate));
             }
             model.sort(new Comparator<HighscoreEntry>() {
                 @Override public int compare(HighscoreEntry o1, HighscoreEntry o2) {
@@ -83,8 +88,14 @@ public class WebsiteGenerator extends AbstractJob {
                 }
             });
             rankThem(model);
+            tournamentModel.sort(new Comparator<HighscoreEntry>() {
+                @Override public int compare(HighscoreEntry o1, HighscoreEntry o2) {
+                    return Long.compare(o2.getDonations(), o1.getDonations());
+                }
+            });
+            rankThem(tournamentModel);
 
-            String website = generateSite(model);
+            String website = generateSite(model, tournamentModel);
             ftpService.upload(
                     config.getConfig().getProperty("ftp.server.url"),
                     Integer.valueOf(config.getConfig().getProperty("ftp.server.port")),
@@ -128,7 +139,39 @@ public class WebsiteGenerator extends AbstractJob {
         private int rank;
     }
 
-    private String generateSite(List<HighscoreEntry> model) {
+    private String generateSite(List<HighscoreEntry> model, List<HighscoreEntry> tournamentModel) {
+        StringBuilder s1 = new StringBuilder();
+        s1.append("<table class=\"table table-inverse table-striped\">");
+        s1.append("<thead>");
+        s1.append("<tr>");
+        s1.append("<th>");
+        s1.append("#");
+        s1.append("</th>");
+        s1.append("<th>");
+        s1.append("Nick");
+        s1.append("</th>");
+        s1.append("<th>");
+        s1.append("Kronen");
+        s1.append("</th>");
+        s1.append("</tr>");
+        s1.append("</thead>");
+        s1.append("<tbody>");
+        for (HighscoreEntry highscoreEntry : tournamentModel) {
+            s1.append("<tr>");
+            s1.append("<th scope=\"row\">");
+            s1.append(highscoreEntry.getRank());
+            s1.append(".</th>");
+            s1.append("<td>");
+            s1.append(String.format("<a class=\"h4\" href=\"https://spy.deckshop.pro/player/%s\">%s</a>", highscoreEntry.getMemberTag().replace("#", ""), highscoreEntry.getMemberName()));
+            s1.append("</td>");
+            s1.append("<td>");
+            s1.append(format.format(highscoreEntry.getDonations()));
+            s1.append("</td>");
+            s1.append("</tr>");
+        }
+        s1.append("</tbody>");
+        s1.append("</table>");
+
         StringBuilder s = new StringBuilder();
         s.append("<table class=\"table table-inverse table-striped\">");
         s.append("<thead>");
@@ -141,9 +184,6 @@ public class WebsiteGenerator extends AbstractJob {
         s.append("</th>");
         s.append("<th>");
         s.append("Spenden");
-        s.append("</th>");
-        s.append("<th>");
-        s.append("Status");
         s.append("</th>");
         s.append("</tr>");
         s.append("</thead>");
@@ -158,9 +198,6 @@ public class WebsiteGenerator extends AbstractJob {
             s.append("</td>");
             s.append("<td>");
             s.append(format.format(highscoreEntry.getDonations()));
-            s.append("</td>");
-            s.append("<td>");
-            s.append(getStatus(highscoreEntry));
             s.append("</td>");
             s.append("</tr>");
         }
@@ -208,7 +245,13 @@ public class WebsiteGenerator extends AbstractJob {
                 "        <p class=\"small\">\n" +
                 "            Bei uns dürfen nur die Vize kicken! Eine Ausnahme besteht, wenn kein Vize da ist und jemand ausklinkt im Chat.\n" +
                 "        </p>\n" +
+                "    <h3 align=\"center\">Wer darf kicken?</h3>\n" +
+                "        <p class=\"small\">\n" +
+                "            Sammle Kronen im Solo-Testspiel gegen Deine Mates, um in der Clan-Liga aufzusteigen.\n" +
+                "        </p>\n" +
                 "        </div>\n" +
+                "    <h3 align=\"center\">Clan-Liga</h3>\n" +
+                "%s" +
                 "    <h3 align=\"center\">Wochen-Highscore vom (%s)</h3>\n" +
                 "%s" +
                 "<hr/><p/>%s" +
@@ -235,27 +278,7 @@ public class WebsiteGenerator extends AbstractJob {
                 "            </p>\n" +
                 "        </div>\n" +
                 "    </footer>";
-        return String.format(template, new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), s.toString(), footer);
-    }
-
-    private String getStatus(HighscoreEntry highscoreEntry) {
-        Role role = highscoreEntry.getRole();
-        long donations = highscoreEntry.getDonations();
-        if (donations < 200) {
-            if (role == Role.MEMBER) {
-                if (kickSafe(highscoreEntry.getJoiningDate())) {
-                    return "Neu";
-                }
-                return "X";
-            } else if (role == Role.ELDER) {
-                return "-";
-            }
-        } else {
-            if (role == Role.MEMBER) {
-                return "+";
-            }
-        }
-        return "";
+        return String.format(template, s1.toString(), new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), s.toString(), footer);
     }
 
     private boolean kickSafe(Date joiningDate) {

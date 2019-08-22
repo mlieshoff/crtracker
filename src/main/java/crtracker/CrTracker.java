@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import crtracker.challenge.ChallengeJob;
 import crtracker.checks.DataImporter;
 import crtracker.checks.DatabaseCheck;
 import crtracker.checks.EnvironmentCheck;
@@ -79,7 +80,7 @@ public class CrTracker {
         jobs.add(new DataImporter(config));
         jobs.add(new WebsiteGenerator(config));
         jobs.add(new DatabaseCheck(config));
-//        jobs.add(new ChallengeJob(config));
+        jobs.add(new ChallengeJob(config));
         while(running) {
             Thread.sleep(5000);
             for (Job job : jobs) {

@@ -1,0 +1,1 @@
+insert into `challenge_definitions` (id, name, challenge_activation_type, challenge_summary_type, challenge_summary_number, objectives) values(1, 'intern-tournament-weekly', 1, 1, 50, 'INTERN_TOURNAMENT');

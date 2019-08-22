@@ -21,6 +21,11 @@ public enum ChallengeActivationType {
             DateTime end = calendarWeek.getRight();
             return new ImmutablePair<>(start, end);
         }
+    },
+    WEEKLY_FLUENT((byte) 2) {
+        @Override public Pair<DateTime, DateTime> getActivationRange(DateTime now) {
+            return new ImmutablePair<>(now, now.plusDays(7));
+        }
     };
 
     private static final Map<Byte, ChallengeActivationType> LOOKUP;

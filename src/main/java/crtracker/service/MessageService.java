@@ -58,6 +58,24 @@ public class MessageService extends NonDbTransactionalService {
         }
     }
 
+    public void sendLiga(final Config config, final String message) {
+        try {
+            doInService(new Lambda<Void>() {
+                public Void exec(Object... params) throws Exception {
+                    if (Config.TEST) {
+                        log.info("BOT: sendLiga: {}", message);
+                    } else {
+                        getBot(config).sendLiga(new MessageBuilder().append(message).build());
+                    }
+                    return null;
+                }
+            });
+        } catch (ServiceException e) {
+            log.warn("Could not send liga to Discord: %s", message, e);
+            releaseBot();
+        }
+    }
+
     private void releaseBot() {
         cache.clear();
     }

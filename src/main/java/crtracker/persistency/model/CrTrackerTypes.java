@@ -30,7 +30,9 @@ public enum CrTrackerTypes implements MeasureType {
     MEMBER_NICK(5),
     MEMBER_BANNED_NICK(6),
     MEMBER_ROLE(7),
-    CHALLENGE(8);
+    CHALLENGE(8),
+    INTERN_TOURNAMENT(9),
+    MEMBER_LAST_TEST_1V1(10);
 
     private int code;
 

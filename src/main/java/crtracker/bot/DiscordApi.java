@@ -50,4 +50,8 @@ public class DiscordApi {
         jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.welcome"))).sendMessage(message).submit();
     }
 
+    public void sendLiga(Message message) {
+        jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.liga"))).sendMessage(message).submit();
+    }
+
 }
