@@ -9,15 +9,13 @@ public class ApiWrapper {
 
     private final String officialApiUrl;
     private final String officialApiToken;
-    private final String royalApiUrl;
-    private final String royalApiToken;
 
     public ClanData getClanData(String clanTag) {
         try {
             log.info("try get clan data from official api...");
             return new OfficialApi(officialApiUrl, officialApiToken).getClanData(clanTag);
         } catch (Exception e) {
-            log.error("catched exception while getting clan data[{}]...", royalApiUrl, e);
+            log.error("catched exception while getting clan data[{}]...", officialApiUrl, e);
             throw new IllegalStateException(e);
         }
     }
@@ -27,7 +25,7 @@ public class ApiWrapper {
             log.info("try get battle log data from official api...");
             return new OfficialApi(officialApiUrl, officialApiToken).getPlayerBattleLogData(playerTag);
         } catch (Exception e) {
-            log.error("catched exception while getting battle log [{}]...", royalApiUrl, e);
+            log.error("catched exception while getting battle log [{}]...", officialApiToken, e);
             throw new IllegalStateException(e);
         }
     }

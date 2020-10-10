@@ -26,11 +26,9 @@ public class Config {
 
     public static final boolean TEST = false;
 
-    @Getter
-    private final Properties config;
+    @Getter private final Properties config;
 
-    @Getter
-    private final Properties credentials;
+    @Getter private final Properties credentials;
 
     private SessionFactory sessionFactory;
 
@@ -54,7 +52,8 @@ public class Config {
         configuration.setProperty("hibernate.connection.username", credentials.getProperty("database.username"));
         configuration.setProperty("hibernate.connection.password", credentials.getProperty("database.password"));
         configuration.setProperty("hibernate.show_sql", config.getProperty("database.show.sql"));
-        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties()).build();
         sessionFactory = configuration.buildSessionFactory(serviceRegistry);
     }
 
@@ -67,12 +66,8 @@ public class Config {
     }
 
     public ApiWrapper createApiWrapper() {
-        return new ApiWrapper(
-                config.getProperty("official.cr.api.url"),
-                credentials.getProperty("official.cr.api.token"),
-                config.getProperty("royal.cr.api.url"),
-                credentials.getProperty("royal.cr.api.token")
-        );
+        return new ApiWrapper(config.getProperty("official.cr.api.url"),
+                credentials.getProperty("official.cr.api.token"));
     }
 
 }

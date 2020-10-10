@@ -96,7 +96,8 @@
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>crtracker.CrTracker</mainClass>
                                 </transformer>
                             </transformers>
@@ -205,11 +206,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.17</version>
-        </dependency>
-        <dependency>
-            <groupId>jcrapi</groupId>
-            <artifactId>jcrapi</artifactId>
-            <version>v12.0.236-RC5</version>
         </dependency>
         <dependency>
             <groupId>jcrapi2</groupId>

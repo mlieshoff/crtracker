@@ -50,11 +50,9 @@ public class CrTracker {
         CrTracker crTracker = new CrTracker(cipherFilename, propertiesFilename, credentialsFilename, statusFilename);
         try {
             crTracker.run();
-        } catch (InterruptedException e) {
-            //
-        } catch (Exception e) {
-            crTracker.messageService.sendAlert(crTracker.config, "Error while running: " + e.getMessage());
+        } catch (Throwable e) {
             log.error("Error while running", e);
+            crTracker.messageService.sendAlert(crTracker.config, "Error while running: " + e.getMessage());
         }
         System.exit(0);
     }
@@ -81,7 +79,7 @@ public class CrTracker {
         jobs.add(new WebsiteGenerator(config));
         jobs.add(new DatabaseCheck(config));
         jobs.add(new ChallengeJob(config));
-        while(running) {
+        while (running) {
             Thread.sleep(5000);
             for (Job job : jobs) {
                 job.run();
@@ -95,7 +93,7 @@ public class CrTracker {
 
     private void migrate() throws ServiceException {
         ServiceFactory.getService(MigrationService.class).migrate(false, CrTracker.class);
-//        new DuplicateRemover().run(config, config.getConfig().getProperty("crtracker.clan.tag"));
+        //        new DuplicateRemover().run(config, config.getConfig().getProperty("crtracker.clan.tag"));
     }
 
     private void assertIsNotRunning() throws IOException {

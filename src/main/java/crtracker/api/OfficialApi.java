@@ -37,15 +37,10 @@ public class OfficialApi {
         PlayerBattleLogData playerBattleLogData = new PlayerBattleLogData();
         for (PlayerBattleLog playerBattleLog : getPlayerBattleLogResponse) {
             PlayerBattleLogData.PlayerBattleLogDataEntry playerBattleLogDataEntry = new PlayerBattleLogData.PlayerBattleLogDataEntry(
-                    playerBattleLog.getBattleTime(),
-                    playerBattleLog.getType(),
-                    playerBattleLog.getTeam().get(0).getCrowns(),
-                    playerBattleLog.getOpponent().get(0).getCrowns(),
-                    playerBattleLog.getTeam().get(0).getTag(),
-                    playerBattleLog.getOpponent().get(0).getTag(),
-                    playerBattleLog.getTeam().get(0).getName(),
-                    playerBattleLog.getOpponent().get(0).getName()
-            );
+                    playerBattleLog.getBattleTime(), playerBattleLog.getType(),
+                    playerBattleLog.getTeam().get(0).getCrowns(), playerBattleLog.getOpponent().get(0).getCrowns(),
+                    playerBattleLog.getTeam().get(0).getTag(), playerBattleLog.getOpponent().get(0).getTag(),
+                    playerBattleLog.getTeam().get(0).getName(), playerBattleLog.getOpponent().get(0).getName());
             playerBattleLogData.getEntries().add(playerBattleLogDataEntry);
         }
         return playerBattleLogData;
