@@ -32,7 +32,8 @@ public enum CrTrackerTypes implements MeasureType {
     MEMBER_ROLE(7),
     CHALLENGE(8),
     INTERN_TOURNAMENT(9),
-    MEMBER_LAST_TEST_1V1(10);
+    MEMBER_LAST_TIME_LIGA_BATTLE(10),
+    MEMBER_LAST_TIME_BATTLE(11);
 
     private int code;
 

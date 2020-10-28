@@ -12,14 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import crtracker.Config;
 import crtracker.api.ApiWrapper;
-import crtracker.api.ClanData;
-import crtracker.api.ClanDataMember;
-import crtracker.api.PlayerBattleLogData;
 import crtracker.job.AbstractJob;
 import crtracker.persistency.Role;
 import crtracker.persistency.dao.MeasureDao;
@@ -28,162 +24,175 @@ import crtracker.persistency.model.NumberMeasure;
 import crtracker.persistency.model.StringMeasure;
 import crtracker.persistency.model.TextMeasure;
 import crtracker.service.MessageService;
+import jcrapi2.model.ClanMember;
+import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.response.GetClanResponse;
+import jcrapi2.response.GetPlayerBattleLogResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DataImporter extends AbstractJob {
 
-    private final static SimpleDateFormat BATTLE_TIME_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+  private final static SimpleDateFormat BATTLE_TIME_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 
-    private final MessageService messageService = ServiceFactory.getService(MessageService.class);
+  private final MessageService messageService = ServiceFactory.getService(MessageService.class);
 
-    private final Config config;
+  private final Config config;
 
-    private final ApiWrapper apiWrapper;
+  private final ApiWrapper apiWrapper;
 
-    private final String clanTag;
+  private final String clanTag;
 
-    private final MeasureDao measureDao = new MeasureDao();
+  private final MeasureDao measureDao = new MeasureDao();
 
-    public DataImporter(Config config) throws Exception {
-        this.config = config;
-        clanTag = config.getConfig().getProperty("crtracker.clan.tag");
-        apiWrapper = config.createApiWrapper();
+  public DataImporter(Config config) throws Exception {
+    this.config = config;
+    clanTag = config.getConfig().getProperty("crtracker.clan.tag");
+    apiWrapper = config.createApiWrapper();
+  }
+
+  @Override
+  public long getTimeout() {
+    return 60000;
+  }
+
+  @Override
+  protected void runIntern() throws Exception {
+    Session session = config.createSession();
+    Transaction transaction = session.beginTransaction();
+    try {
+      doImport(session);
+      transaction.commit();
+    } catch (Exception e) {
+      log.error("Error while importing data", e);
+      if (transaction != null) {
+        transaction.rollback();
+      }
+      messageService.sendAlert(config, "Error while importing data: " + e.getMessage());
+    } finally {
+      session.close();
     }
+  }
 
-    @Override
-    public long getTimeout() {
-        return 60000;
-    }
+  private void doImport(Session session) {
+    importClan(session);
+  }
 
-    @Override
-    protected void runIntern() throws Exception {
-        Session session = config.createSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            doImport(session);
-            transaction.commit();
-        } catch (Exception e) {
-            log.error("Error while importing data", e);
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            messageService.sendAlert(config, "Error while importing data: " + e.getMessage());
-        } finally {
-            session.close();
+  private void importClan(Session session) {
+    GetClanResponse getClanResponse = apiWrapper.getClanData(clanTag);
+    importClan(session, getClanResponse);
+  }
+
+  private void importClan(Session session, GetClanResponse getClanResponse) {
+    TextMeasure oldMembers = measureDao
+        .updateTextMeasure(session, getClanResponse.getTag(), CrTrackerTypes.CLAN_MEMBERS.getCode(),
+            getClanMemberTags(getClanResponse));
+    importMembers(session, getClanResponse);
+    if (oldMembers != null) {
+      Set<String> old = new TreeSet<>();
+      old.addAll(asList(oldMembers.getValue().split(",")));
+
+      Set<String> current = new TreeSet<>();
+      current.addAll(asList(getClanMemberTags(getClanResponse).split(",")));
+
+      if (!current.equals(old)) {
+        Collection<String> newMembers = CollectionUtils.subtract(current, old);
+        Collection<String> leftMembers = CollectionUtils.subtract(old, current);
+        if (newMembers.size() > 0) {
+          messageService.sendWelcome(config,
+              "Willkommen im Clan! Bitte begrüßt die folgenden Neuankömmlinge im Clan-Chat:\n"
+                  + StringUtils.join(resolveMemberTags(session, newMembers), "\n"));
         }
-    }
-
-    private void doImport(Session session) {
-        importClan(session);
-    }
-
-    private void importClan(Session session) {
-        ClanData clanData = apiWrapper.getClanData(clanTag);
-        importClan(session, clanData);
-    }
-
-    private void importClan(Session session, ClanData clanData) {
-        TextMeasure oldMembers = measureDao
-                .updateTextMeasure(session, clanData.getTag(), CrTrackerTypes.CLAN_MEMBERS.getCode(),
-                        getClanMemberTags(clanData));
-        importMembers(session, clanData.getClanDataMembers());
-        if (oldMembers != null) {
-            Set<String> old = new TreeSet<>();
-            old.addAll(asList(oldMembers.getValue().split(",")));
-
-            Set<String> current = new TreeSet<>();
-            current.addAll(asList(getClanMemberTags(clanData).split(",")));
-
-            if (!current.equals(old)) {
-                Collection<String> newMembers = CollectionUtils.subtract(current, old);
-                Collection<String> leftMembers = CollectionUtils.subtract(old, current);
-                if (newMembers.size() > 0) {
-                    messageService.sendWelcome(config,
-                            "Willkommen im Clan! Bitte begrüßt die folgenden Neuankömmlinge im Clan-Chat:\n"
-                                    + StringUtils.join(resolveMemberTags(session, newMembers), "\n"));
-                }
-                if (leftMembers.size() > 0) {
-                    messageService.sendAlert(config, "Folgende Member haben den Clan verlassen:\n" + StringUtils
-                            .join(resolveMemberTags(session, leftMembers), "\n"));
-                }
-            }
+        if (leftMembers.size() > 0) {
+          messageService.sendAlert(config, "Folgende Member haben den Clan verlassen:\n" + StringUtils
+              .join(resolveMemberTags(session, leftMembers), "\n"));
         }
+      }
     }
+  }
 
-    private Collection<String> resolveMemberTags(Session session, Collection<String> memberTags) {
-        Collection<String> names = new TreeSet<>();
-        for (String memberTag : memberTags) {
-            log.info("try to resolve tag: {}", memberTag);
-            StringMeasure name = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.MEMBER_NICK, memberTag);
-            if (name != null) {
-                names.add(name.getValue());
+  private Collection<String> resolveMemberTags(Session session, Collection<String> memberTags) {
+    Collection<String> names = new TreeSet<>();
+    for (String memberTag : memberTags) {
+      log.info("try to resolve tag: {}", memberTag);
+      StringMeasure name = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.MEMBER_NICK, memberTag);
+      if (name != null) {
+        names.add(name.getValue());
+      } else {
+        names.add(memberTag + " (Springer)");
+        log.warn("something weird while resolving name for tag: " + memberTag);
+      }
+    }
+    return names;
+  }
+
+  private void importMembers(Session session, GetClanResponse getClanResponse) {
+    for (ClanMember clanMember : getClanResponse.getMemberList()) {
+      measureDao.updateNumberMeasure(session, clanMember.getTag(), CrTrackerTypes.MEMBER_DONATIONS.getCode(),
+          clanMember.getDonations());
+      measureDao.updateNumberMeasure(session, clanMember.getTag(), CrTrackerTypes.MEMBER_ROLE.getCode(),
+          Role.forName(clanMember.getRole()).getCode());
+      measureDao.updateStringMeasure(session, clanMember.getTag(), CrTrackerTypes.MEMBER_NICK.getCode(),
+          clanMember.getName());
+      importBattles(session, getClanResponse, clanMember);
+    }
+  }
+
+  private static String getClanMemberTags(GetClanResponse getClanResponse) {
+    Set<String> clanMemberTags = new TreeSet<>();
+    for (ClanMember clanMember : getClanResponse.getMemberList()) {
+      clanMemberTags.add(clanMember.getTag());
+    }
+    return StringUtils.join(clanMemberTags, ",");
+  }
+
+  private void importBattles(Session session, GetClanResponse getClanResponse, ClanMember clanMember) {
+    String playerTag = clanMember.getTag();
+    NumberMeasure lastLigaBattleIdMeasure = measureDao
+        .getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_LAST_TIME_LIGA_BATTLE, playerTag);
+    long lastLigaBattleTimeMillis = lastLigaBattleIdMeasure != null ? lastLigaBattleIdMeasure.getValue() : 0;
+    NumberMeasure lastBattleIdMeasure = measureDao
+        .getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_LAST_TIME_BATTLE, playerTag);
+    long lastBattleTimeMillis = lastBattleIdMeasure != null ? lastBattleIdMeasure.getValue() : 0;
+    GetPlayerBattleLogResponse getPlayerBattleLogResponse = apiWrapper.getBattleLogFor(playerTag);
+    for (PlayerBattleLog playerBattleLog : getPlayerBattleLogResponse) {
+      try {
+        Date battleTime = BATTLE_TIME_FORMAT.parse(playerBattleLog.getBattleTime());
+        long battleTimeMillis = battleTime.getTime();
+        if ("clanmate".equalsIgnoreCase(playerBattleLog.getType())) {
+          if (battleTimeMillis > lastLigaBattleTimeMillis) {
+            lastLigaBattleTimeMillis = battleTimeMillis;
+            int player1Crowns = playerBattleLog.getTeam().get(0).getCrowns();
+            int player2Crowns = playerBattleLog.getOpponent().get(0).getCrowns();
+            NumberMeasure
+                ratingMeasure =
+                measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.INTERN_TOURNAMENT, playerTag);
+            long rating = ratingMeasure != null ? ratingMeasure.getValue() : 0;
+            if (player1Crowns > player2Crowns) {
+              rating += player1Crowns;
+            } else if (player1Crowns < player2Crowns) {
+              rating += player2Crowns;
             } else {
-                names.add(memberTag + " (Springer)");
-                log.warn("something weird while resolving name for tag: " + memberTag);
+              rating += player1Crowns;
             }
+            measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.INTERN_TOURNAMENT.getCode(),
+                rating);
+            measureDao.updateNumberMeasure(session, playerTag,
+                CrTrackerTypes.MEMBER_LAST_TIME_LIGA_BATTLE.getCode(), lastLigaBattleTimeMillis);
+            messageService.sendLiga(config, getClanResponse, playerBattleLog);
+          }
+        } else {
+          if (battleTimeMillis > lastBattleTimeMillis) {
+            lastBattleTimeMillis = battleTimeMillis;
+            measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.MEMBER_LAST_TIME_BATTLE.getCode(),
+                lastBattleTimeMillis);
+            messageService.sendLiveTicker(config, getClanResponse, playerBattleLog);
+          }
         }
-        return names;
+      } catch (ParseException e) {
+        log.warn("error while parsing battle time", e);
+      }
     }
-
-    private void importMembers(Session session, List<ClanDataMember> clanDataMembers) {
-        for (ClanDataMember clanDataMember : clanDataMembers) {
-            measureDao.updateNumberMeasure(session, clanDataMember.getTag(), CrTrackerTypes.MEMBER_DONATIONS.getCode(),
-                    clanDataMember.getDonations());
-            measureDao.updateNumberMeasure(session, clanDataMember.getTag(), CrTrackerTypes.MEMBER_ROLE.getCode(),
-                    Role.forName(clanDataMember.getRole()).getCode());
-            measureDao.updateStringMeasure(session, clanDataMember.getTag(), CrTrackerTypes.MEMBER_NICK.getCode(),
-                    clanDataMember.getName());
-            importBattles(session, clanDataMember.getTag());
-        }
-    }
-
-    private static String getClanMemberTags(ClanData clanData) {
-        Set<String> clanMemberTags = new TreeSet<>();
-        for (ClanDataMember clanDataMember : clanData.getClanDataMembers()) {
-            clanMemberTags.add(clanDataMember.getTag());
-        }
-        return StringUtils.join(clanMemberTags, ",");
-    }
-
-    private void importBattles(Session session, String playerTag) {
-        NumberMeasure lastBattleIdMeasure = measureDao
-                .getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_LAST_TEST_1V1, playerTag);
-        long lastBattleTimeMillis = lastBattleIdMeasure != null ? lastBattleIdMeasure.getValue() : 0;
-        PlayerBattleLogData playerBattleLogData = apiWrapper.getBattleLogFor(playerTag);
-        for (PlayerBattleLogData.PlayerBattleLogDataEntry playerBattleLogDataEntry : playerBattleLogData.getEntries()) {
-            if ("clanmate".equalsIgnoreCase(playerBattleLogDataEntry.getType())) {
-                try {
-                    Date battleTime = BATTLE_TIME_FORMAT.parse(playerBattleLogDataEntry.getId());
-                    long battleTimeMillis = battleTime.getTime();
-                    if (battleTimeMillis > lastBattleTimeMillis) {
-                        lastBattleTimeMillis = battleTimeMillis;
-                        int player1Crowns = playerBattleLogDataEntry.getPlayer1Crowns();
-                        int player2Crowns = playerBattleLogDataEntry.getPlayer2Crowns();
-                        NumberMeasure ratingMeasure = measureDao
-                                .getCurrentNumberMeasure(session, CrTrackerTypes.INTERN_TOURNAMENT, playerTag);
-                        long rating = ratingMeasure != null ? ratingMeasure.getValue() : 0;
-                        if (player1Crowns > player2Crowns) {
-                            rating += player1Crowns;
-                        } else if (player1Crowns < player2Crowns) {
-                            rating += player2Crowns;
-                        } else {
-                            rating += player1Crowns;
-                        }
-                        measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.INTERN_TOURNAMENT.getCode(),
-                                rating);
-                        measureDao
-                                .updateNumberMeasure(session, playerTag, CrTrackerTypes.MEMBER_LAST_TEST_1V1.getCode(),
-                                        lastBattleTimeMillis);
-                        messageService.sendLiga(config,
-                                String.format("%s VS %s: %s:%s", playerBattleLogDataEntry.getPlayer1Name(),
-                                        playerBattleLogDataEntry.getPlayer2Name(), player1Crowns, player2Crowns));
-                    }
-                } catch (ParseException e) {
-                    log.warn("error while parsing battle time", e);
-                }
-            }
-        }
-    }
+  }
 
 }

@@ -15,6 +15,7 @@ import crtracker.checks.DataImporter;
 import crtracker.checks.DatabaseCheck;
 import crtracker.checks.EnvironmentCheck;
 import crtracker.checks.WebsiteGenerator;
+import crtracker.checks.WebsiteLogin;
 import crtracker.job.Job;
 import crtracker.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +80,7 @@ public class CrTracker {
         jobs.add(new WebsiteGenerator(config));
         jobs.add(new DatabaseCheck(config));
         jobs.add(new ChallengeJob(config));
+        jobs.add(new WebsiteLogin(config));
         while (running) {
             Thread.sleep(5000);
             for (Job job : jobs) {

@@ -17,10 +17,11 @@
 
 package crtracker.bot;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 import java.util.Properties;
 import javax.security.auth.login.LoginException;
@@ -30,28 +31,36 @@ import javax.security.auth.login.LoginException;
  */
 public class DiscordApi {
 
-    private JDA jda;
+  private JDA jda;
 
-    private Properties config;
+  private Properties config;
 
-    public DiscordApi(Properties config, Properties credentials) throws LoginException, InterruptedException {
-        this.config = config;
-        jda = new JDABuilder(AccountType.BOT)
-                .setToken(credentials.getProperty("discord.token"))
-                .setAutoReconnect(true)
-                .buildBlocking();
-    }
+  public DiscordApi(Properties config, Properties credentials)
+      throws LoginException, InterruptedException, RateLimitedException {
+    this.config = config;
+    jda = JDABuilder.createLight(credentials.getProperty("discord.token"))
+        .setAutoReconnect(true)
+        .build();
+    jda.awaitReady();
+  }
 
-    public void sendAlert(Message message) {
-        jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.alerts"))).sendMessage(message).submit();
-    }
+  public void sendAlert(Message message) {
+    jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.alerts"))).sendMessage(message)
+        .submit();
+  }
 
-    public void sendWelcome(Message message) {
-        jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.welcome"))).sendMessage(message).submit();
-    }
+  public void sendWelcome(Message message) {
+    jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.welcome"))).sendMessage(message)
+        .submit();
+  }
 
-    public void sendLiga(Message message) {
-        jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.liga"))).sendMessage(message).submit();
-    }
+  public void sendLiga(MessageEmbed messageEmbed) {
+    jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.liga"))).sendMessage(messageEmbed).submit();
+  }
+
+  public void sendLiveTicker(MessageEmbed messageEmbed) {
+    jda.getTextChannelById(Long.valueOf(config.getProperty("discord.channel.liveticker"))).sendMessage(messageEmbed)
+        .submit();
+  }
 
 }
