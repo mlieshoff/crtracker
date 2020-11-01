@@ -1,6 +1,7 @@
 package crtracker.api;
 
 import jcrapi2.response.GetClanResponse;
+import jcrapi2.response.GetCurrentClanRiverRaceResponse;
 import jcrapi2.response.GetPlayerBattleLogResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,16 @@ public class ApiWrapper {
     } catch (Exception e) {
       log.error("catched exception while getting battle log [{}]...", officialApiToken, e);
       return new OfficialApi(officialApiUrl, officialApiToken).getPlayerBattleLogData(playerTag);
+    }
+  }
+
+  public GetCurrentClanRiverRaceResponse getCurrentClanRiverRace(String clanTag) {
+    try {
+      log.info("try get battle log data from official api...");
+      return new OfficialApi(proxyApiUrl, proxyApiToken).getCurrentClanRiverRace(clanTag);
+    } catch (Exception e) {
+      log.error("catched exception while getting battle log [{}]...", officialApiToken, e);
+      return new OfficialApi(officialApiUrl, officialApiToken).getCurrentClanRiverRace(clanTag);
     }
   }
 

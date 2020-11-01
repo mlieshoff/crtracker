@@ -122,19 +122,9 @@
             <version>4.12</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -203,29 +193,9 @@
             <version>3.6</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.17</version>
-        </dependency>
-        <dependency>
             <groupId>jcrapi2</groupId>
             <artifactId>jcrapi2</artifactId>
-            <version>1.0.1-U2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazon.alexa</groupId>
-            <artifactId>alexa-skills-kit</artifactId>
-            <version>1.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -262,6 +232,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.8</version>
         </dependency>
     </dependencies>
 

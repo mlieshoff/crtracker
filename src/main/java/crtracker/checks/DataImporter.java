@@ -25,8 +25,10 @@ import crtracker.persistency.model.StringMeasure;
 import crtracker.persistency.model.TextMeasure;
 import crtracker.service.MessageService;
 import jcrapi2.model.ClanMember;
+import jcrapi2.model.CurrentClanRiverRaceClanParticipant;
 import jcrapi2.model.PlayerBattleLog;
 import jcrapi2.response.GetClanResponse;
+import jcrapi2.response.GetCurrentClanRiverRaceResponse;
 import jcrapi2.response.GetPlayerBattleLogResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,8 +81,8 @@ public class DataImporter extends AbstractJob {
   }
 
   private void importClan(Session session) {
-    GetClanResponse getClanResponse = apiWrapper.getClanData(clanTag);
-    importClan(session, getClanResponse);
+    importClan(session, apiWrapper.getClanData(clanTag));
+    importRiverRace(session, apiWrapper.getCurrentClanRiverRace(clanTag));
   }
 
   private void importClan(Session session, GetClanResponse getClanResponse) {
@@ -192,6 +194,18 @@ public class DataImporter extends AbstractJob {
       } catch (ParseException e) {
         log.warn("error while parsing battle time", e);
       }
+    }
+  }
+
+  private void importRiverRace(Session session, GetCurrentClanRiverRaceResponse getCurrentClanRiverRaceResponse) {
+    for (CurrentClanRiverRaceClanParticipant currentClanRiverRaceClanParticipant : getCurrentClanRiverRaceResponse
+        .getClan().getParticipants()) {
+      String playerTag = currentClanRiverRaceClanParticipant.getTag();
+      int fame = currentClanRiverRaceClanParticipant.getFame();
+      int repairPoints = currentClanRiverRaceClanParticipant.getRepairPoints();
+      measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.MEMBER_RIVER_WARS_FAME.getCode(), fame);
+      measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.MEMBER_RIVER_WARS_SHIP_REPAIRPOINTS.getCode(),
+          repairPoints);
     }
   }
 
