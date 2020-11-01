@@ -275,7 +275,7 @@ public class WebsiteGenerator extends AbstractJob {
         "        </p>\n" +
         "    <h3 align=\"center\">Was ist das wöchentliche Ziel?</h3>\n" +
         "        <p class=\"small\">\n" +
-        "            Von Sonntag bis Sonntag: Spende mindestens 400 Karten ODER erreiche im Clankrieg in der Summe von Ruhm- und Reparaturpunkten mindestens 500 Punkte.\n"
+        "            Immer bis Samstag Abends: Spende mindestens 400 Karten ODER erreiche im Clankrieg in der Summe von Ruhm- und Reparaturpunkten mindestens 500 Punkte.\n"
         +
         "        </p>\n" +
         "    <h3 align=\"center\">Wie werde ich Ältester?</h3>\n" +
