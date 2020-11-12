@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import crtracker.Config;
+import crtracker.service.ConfigurationService;
 import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
 import crtracker.persistency.model.TextMeasure;
@@ -19,8 +19,8 @@ public class DuplicateRemover {
 
     private final MeasureDao measureDao = new MeasureDao();
 
-    public void run(Config config, String clanTag) {
-        Session session = config.createSession();
+    public void run(ConfigurationService configurationService, String clanTag) {
+        Session session = configurationService.createSession();
         Transaction transaction = session.beginTransaction();
         try {
             List<TextMeasure> lastTextMeasures = measureDao.getLastTextMeasures(session, CrTrackerTypes.CLAN_MEMBERS, clanTag, 1000);
