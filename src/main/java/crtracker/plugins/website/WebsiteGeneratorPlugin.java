@@ -259,31 +259,30 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         "        <p class=\"small\">\n" +
         "            Völlig unkompliziert und anonym, per Discord, und ideal zur Kommunikation.\n" +
         "        </p>\n" +
-        "    <h3 align=\"center\">Was ist das wöchentliche Ziel?</h3>\n" +
+        "    <h3 align=\"center\">Wir sind ein Kriegsclan!</h3>\n" +
         "        <p class=\"small\">\n" +
-        "            Immer bis Samstag Abends: Spende mindestens 400 Karten ODER erreiche im Clankrieg in der Summe von Ruhm- und Reparaturpunkten mindestens 500 Punkte.\n"
+        "            Das bedeutet der Fokus liegt auf bei uns auf Beteligung am Clankrieg.\n"
         +
+        "        </p>\n" +
+        "    <h3 align=\"center\">Achte auf Deine Schiffsverteidigung!</h3>\n" +
+        "        <p class=\"small\">\n" +
+        "            Starte jeden Krieg mit 3 Verteidigungsdecks!\n" +
+        "        </p>\n" +
+        "    <h3 align=\"center\">Repariere das Schiff!</h3>\n" +
+        "        <p class=\"small\">\n" +
+        "            Qualmt und brennt das Schiff, dann repariere!\n" +
         "        </p>\n" +
         "    <h3 align=\"center\">Wie werde ich Ältester?</h3>\n" +
         "        <p class=\"small\">\n" +
-        "            Erfülle das wöchentliche Ziel.\n" +
+        "            Erreiche mindestens 1200 Punkte im Clankrieg.\n" +
         "        </p>\n" +
         "    <h3 align=\"center\">Wie werde ich Vize?</h3>\n" +
         "        <p class=\"small\">\n" +
         "            Sei lange aktiv im Clan, mache mit, bringe Dich im Discord mit ein!\n" +
         "        </p>\n" +
-        "    <h3 align=\"center\">Wann startet der Clankrieg?</h3>\n" +
+        "    <h3 align=\"center\">Warum wurde ich degradiert/gekickt?</h3>\n" +
         "        <p class=\"small\">\n" +
-        "            Der Clankrieg läuft immer. Repariere oder kämpfe so oft es Dir möglich ist.\n" +
-        "        </p>\n" +
-        "    <h3 align=\"center\">Warum wurde ich gekickt?</h3>\n" +
-        "        <p class=\"small\">\n" +
-        "            Entweder bist Du unangenehn im Chat aufgefallen, oder Du bist Mitglied und hast das wöchentliche Ziel nicht erreicht, oder Du warst mehr als 5 Tage offline!\n"
-        +
-        "        </p>\n" +
-        "    <h3 align=\"center\">Warum wurde ich degradiert?</h3>\n" +
-        "        <p class=\"small\">\n" +
-        "            Entweder bist Du unangenehn im Chat aufgefallen oder Du hast das wöchentliche Ziel nicht erreicht.\n"
+        "            Entweder bist Du unangenehn im Chat aufgefallen, oder Du hast Dich nicht am Krieg beteiligt, oder Du warst mehr als 5 Tage offline.\n"
         +
         "        </p>\n" +
         "    <h3 align=\"center\">Wer darf kicken?</h3>\n" +
@@ -340,7 +339,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     if (!joiningDate.after(oneWeekBefore)) {
       long cwPoints = highscoreEntry.getFame() + highscoreEntry.getRepairPoints();
       boolean promotion = false;
-      if (cwPoints >= 500 || highscoreEntry.getDonations() >= 400) {
+      if (cwPoints >= 1200) {
         kick = false;
         promotion = true;
       }
