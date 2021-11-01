@@ -261,7 +261,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         "        </p>\n" +
         "    <h3 align=\"center\">Wir sind ein Kriegsclan!</h3>\n" +
         "        <p class=\"small\">\n" +
-        "            Das bedeutet der Fokus liegt auf bei uns auf Beteligung am Clankrieg.\n"
+        "            Das bedeutet der Fokus liegt auf bei uns auf Beteiligung am Clankrieg.\n"
         +
         "        </p>\n" +
         "    <h3 align=\"center\">Achte auf Deine Schiffsverteidigung!</h3>\n" +
