@@ -40,7 +40,7 @@ public class DiscordApi {
   }
 
   public void sendMessageEmbedd(long channelId, MessageEmbed messageEmbed) {
-    jda.getTextChannelById(channelId).sendMessage(messageEmbed).submit();
+    jda.getTextChannelById(channelId).sendMessageEmbeds(messageEmbed).submit();
   }
 
 }

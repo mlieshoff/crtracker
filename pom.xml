@@ -260,7 +260,7 @@
         <dependency>
             <groupId>org.mili</groupId>
             <artifactId>utils</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-R1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.0_211</version>
+            <version>5.0.0-alpha.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -309,18 +309,13 @@
 
     <repositories>
         <repository>
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-        <repository>
-            <id>org-mili-repo</id>
-            <url>http://dl.bintray.com/mlieshoff/maven</url>
+            <id>mlieshoff-jcrapi2</id>
+            <url>https://packagecloud.io/mlieshoff/jcrapi2/maven2</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
