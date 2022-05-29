@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import crtracker.service.ConfigurationService;
-import jcrapi2.model.PlayerBattleLog;
-import jcrapi2.model.PlayerBattleLogOpponent;
-import jcrapi2.model.PlayerBattleLogTeam;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
+import jcrapi2.api.intern.players.battlelog.Opponent;
+import jcrapi2.api.intern.players.battlelog.Team;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -66,23 +66,23 @@ public class DiscordMessageService {
         .sendMessage(getChannelId("discord.channel.welcome"), new MessageBuilder().append(message).build());
   }
 
-  public void sendLiga(PlayerBattleLog playerBattleLog) throws Exception {
+  public void sendLiga(LogEntry logEntry) throws Exception {
     getBot(configurationService)
-        .sendMessageEmbedd(getChannelId("discord.channel.liga"), createBattleMessageEmbed(playerBattleLog));
+        .sendMessageEmbedd(getChannelId("discord.channel.liga"), createBattleMessageEmbed(logEntry));
   }
 
-  public void sendLiveTicker(PlayerBattleLog playerBattleLog) throws Exception {
+  public void sendLiveTicker(LogEntry logEntry) throws Exception {
     getBot(configurationService)
-        .sendMessageEmbedd(getChannelId("discord.channel.liveticker"), createBattleMessageEmbed(playerBattleLog));
+        .sendMessageEmbedd(getChannelId("discord.channel.liveticker"), createBattleMessageEmbed(logEntry));
   }
 
-  private MessageEmbed createBattleMessageEmbed(PlayerBattleLog playerBattleLog) {
-    List<PlayerBattleLogTeam> team = playerBattleLog.getTeam();
+  private MessageEmbed createBattleMessageEmbed(LogEntry logEntry) {
+    List<Team> team = logEntry.getTeam();
     String playerTag = team.get(0).getTag().substring(1);
-    List<PlayerBattleLogOpponent> opponentTeam = playerBattleLog.getOpponent();
+    List<Opponent> opponentTeam = logEntry.getOpponent();
 
     EmbedBuilder embedBuilder = new EmbedBuilder();
-    embedBuilder.setTitle(translateGameMode(playerBattleLog), format(URL_BATTLE_PATTERN, playerTag));
+    embedBuilder.setTitle(translateGameMode(logEntry), format(URL_BATTLE_PATTERN, playerTag));
     embedBuilder.setAuthor(AUTHOR, URL_CLAN, URL_CLAN_ICON);
     embedBuilder.setThumbnail(THUMBNAIL);
 
@@ -107,8 +107,8 @@ public class DiscordMessageService {
       );
     }
 
-    int playerCrowns = playerBattleLog.getTeam().get(0).getCrowns();
-    int opponentCrowns = playerBattleLog.getOpponent().get(0).getCrowns();
+    int playerCrowns = logEntry.getTeam().get(0).getCrowns();
+    int opponentCrowns = logEntry.getOpponent().get(0).getCrowns();
     String msg = DRAW_TEXT;
     if (playerCrowns > opponentCrowns) {
       msg = WON_TEXT;
@@ -116,27 +116,29 @@ public class DiscordMessageService {
       msg = LOST_TEXT;
     }
     embedBuilder.addField(
-        playerBattleLog.getArena().getName(),
+        logEntry.getArena().getName(),
         format(VERSUS_PATTERN, playerCrowns, opponentCrowns, msg),
         false
     );
     return embedBuilder.build();
   }
 
-  private String transformPlayer(PlayerBattleLogTeam playerBattleLogTeam) {
-    return format(LINK_PATTERN, playerBattleLogTeam.getName(), playerBattleLogTeam.getTag().substring(1));
+  private String transformPlayer(Team team) {
+    return format(LINK_PATTERN, team.getName(), team.getTag().substring(1));
   }
 
-  private String transformPlayer(PlayerBattleLogOpponent playerBattleLogOpponent) {
-    return format(LINK_PATTERN, playerBattleLogOpponent.getName(), playerBattleLogOpponent.getTag().substring(1));
+  private String transformPlayer(Opponent opponent) {
+    return format(LINK_PATTERN, opponent.getName(), opponent.getTag().substring(1));
   }
 
-  private String translateGameMode(PlayerBattleLog playerBattleLog) {
-    String type = playerBattleLog.getType().toLowerCase();
+  private String translateGameMode(LogEntry logEntry) {
+    String type = logEntry.getType().toLowerCase();
+    /*
     if ("challenge".equals(type)) {
-      return playerBattleLog.getChallengeTitle();
+      return logEntry.getChallengeTitle();
     }
-    return format(GAMEMODE_PATTERN, playerBattleLog.getGameMode().getName(), playerBattleLog.getType());
+    */
+    return format(GAMEMODE_PATTERN, logEntry.getGameMode().getName(), logEntry.getType());
   }
 
 }

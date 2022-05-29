@@ -1,7 +1,7 @@
 package crtracker.plugins.riverrace;
 
 import crtracker.plugin.PluginEvent;
-import jcrapi2.response.GetCurrentClanRiverRaceResponse;
+import jcrapi2.api.intern.clans.currentriverrace.CurrentRiverRaceResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,6 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RiverRacePluginEvent implements PluginEvent {
 
-  private final GetCurrentClanRiverRaceResponse getCurrentClanRiverRaceResponse;
+  private final CurrentRiverRaceResponse currentRiverRaceResponse;
 
 }

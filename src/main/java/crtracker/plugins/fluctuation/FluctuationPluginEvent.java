@@ -2,7 +2,7 @@ package crtracker.plugins.fluctuation;
 
 import java.util.List;
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.ClanMember;
+import jcrapi2.api.intern.clans.info.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,6 +10,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FluctuationPluginEvent implements PluginEvent {
 
-  private final List<ClanMember> clanMembers;
+  private final List<Member> members;
 
 }

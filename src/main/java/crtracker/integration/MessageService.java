@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import crtracker.integration.discord.DiscordMessageService;
 import crtracker.service.BaseService;
 import crtracker.service.ConfigurationService;
-import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,33 +48,33 @@ public class MessageService extends BaseService {
     }
   }
 
-  public void sendLiga(PlayerBattleLog playerBattleLog) {
+  public void sendLiga(LogEntry logEntry) {
     try {
       doInService((Lambda<Void>) params -> {
         if (ConfigurationService.TEST) {
-          log.info("sendLiga: {}", playerBattleLog.getBattleTime());
+          log.info("sendLiga: {}", logEntry.getBattleTime());
         } else {
-          discordMessageService.sendLiga(playerBattleLog);
+          discordMessageService.sendLiga(logEntry);
         }
         return null;
       });
     } catch (ServiceException e) {
-      log.warn("Could not send liga: %s", playerBattleLog.getBattleTime(), e);
+      log.warn("Could not send liga: %s", logEntry.getBattleTime(), e);
     }
   }
 
-  public void sendLiveTicker(PlayerBattleLog playerBattleLog) {
+  public void sendLiveTicker(LogEntry logEntry) {
     try {
       doInService((Lambda<Void>) params -> {
         if (ConfigurationService.TEST) {
-          log.info("sendLiveTicker: {}", playerBattleLog.getBattleTime());
+          log.info("sendLiveTicker: {}", logEntry.getBattleTime());
         } else {
-          discordMessageService.sendLiveTicker(playerBattleLog);
+          discordMessageService.sendLiveTicker(logEntry);
         }
         return null;
       });
     } catch (ServiceException e) {
-      log.warn("Could not send live ticker: %s", playerBattleLog.getBattleTime(), e);
+      log.warn("Could not send live ticker: %s", logEntry.getBattleTime(), e);
     }
   }
 

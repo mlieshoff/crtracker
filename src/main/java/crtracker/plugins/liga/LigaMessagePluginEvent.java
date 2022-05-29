@@ -2,13 +2,13 @@ package crtracker.plugins.liga;
 
 import crtracker.integration.MessageService;
 import crtracker.plugins.messaging.MessagePluginEvent;
-import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.Getter;
 
 @Getter
-public class LigaMessagePluginEvent extends MessagePluginEvent<PlayerBattleLog> {
+public class LigaMessagePluginEvent extends MessagePluginEvent<LogEntry> {
 
-  public LigaMessagePluginEvent(PlayerBattleLog message) {
+  public LigaMessagePluginEvent(LogEntry message) {
     super(message);
   }
 

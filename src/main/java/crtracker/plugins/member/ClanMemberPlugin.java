@@ -9,7 +9,7 @@ import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.ClanMember;
+import jcrapi2.api.intern.clans.info.Member;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,13 +21,13 @@ public class ClanMemberPlugin extends AbstractPlugin<ClanMemberPluginEvent> {
 
   @Override
   public void onPluginEvent(Session session, ClanMemberPluginEvent clanMemberPluginEvent) {
-    ClanMember clanMember = clanMemberPluginEvent.getClanMember();
-    measureDao.updateNumberMeasure(session, clanMember.getTag(), CrTrackerTypes.MEMBER_DONATIONS.getCode(),
-        clanMember.getDonations());
-    measureDao.updateNumberMeasure(session, clanMember.getTag(), CrTrackerTypes.MEMBER_ROLE.getCode(),
-        Role.forName(clanMember.getRole()).getCode());
-    measureDao.updateStringMeasure(session, clanMember.getTag(), CrTrackerTypes.MEMBER_NICK.getCode(),
-        clanMember.getName());
+    Member member = clanMemberPluginEvent.getMember();
+    measureDao.updateNumberMeasure(session, member.getTag(), CrTrackerTypes.MEMBER_DONATIONS.getCode(),
+        member.getDonations());
+    measureDao.updateNumberMeasure(session, member.getTag(), CrTrackerTypes.MEMBER_ROLE.getCode(),
+        Role.forName(member.getRole()).getCode());
+    measureDao.updateStringMeasure(session, member.getTag(), CrTrackerTypes.MEMBER_NICK.getCode(),
+        member.getName());
   }
 
   @Override

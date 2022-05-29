@@ -1,9 +1,9 @@
 package crtracker.integration;
 
 import crtracker.integration.clashroyale.OfficialApi;
-import jcrapi2.response.GetClanResponse;
-import jcrapi2.response.GetCurrentClanRiverRaceResponse;
-import jcrapi2.response.GetPlayerBattleLogResponse;
+import jcrapi2.api.intern.clans.currentriverrace.CurrentRiverRaceResponse;
+import jcrapi2.api.intern.clans.info.ClanResponse;
+import jcrapi2.api.intern.players.battlelog.BattleLogResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,33 +26,48 @@ public class ApiWrapper {
     officialApi = new OfficialApi(officialApiUrl, officialApiToken);
   }
 
-  public GetClanResponse getClanData(String clanTag) {
+  public ClanResponse getClanData(String clanTag) {
     try {
       log.info("try get clan data from official api...");
       return proxiedApi.getClanData(clanTag);
     } catch (Exception e) {
       log.error("catched exception while getting clan data[{}]...", officialApiUrl, e);
-      return officialApi.getClanData(clanTag);
+      try {
+        return officialApi.getClanData(clanTag);
+      } catch (Exception ex) {
+        log.error("exception while getting clan data[{}]...", officialApiUrl, e);
+        throw new IllegalStateException(e);
+      }
     }
   }
 
-  public GetPlayerBattleLogResponse getBattleLogFor(String playerTag) {
+  public BattleLogResponse getBattleLogFor(String playerTag) {
     try {
       log.info("try get battle log data from official api...");
       return proxiedApi.getPlayerBattleLogData(playerTag);
     } catch (Exception e) {
       log.error("catched exception while getting battle log [{}]...", officialApiToken, e);
-      return officialApi.getPlayerBattleLogData(playerTag);
+      try {
+        return officialApi.getPlayerBattleLogData(playerTag);
+      } catch (Exception ex) {
+        log.error("exception while getting battle log [{}]...", officialApiToken, e);
+        throw new IllegalStateException(e);
+      }
     }
   }
 
-  public GetCurrentClanRiverRaceResponse getCurrentClanRiverRace(String clanTag) {
+  public CurrentRiverRaceResponse getCurrentClanRiverRace(String clanTag) {
     try {
       log.info("try get battle log data from official api...");
       return proxiedApi.getCurrentClanRiverRace(clanTag);
     } catch (Exception e) {
-      log.error("catched exception while getting battle log [{}]...", officialApiToken, e);
-      return officialApi.getCurrentClanRiverRace(clanTag);
+      log.error("catched exception while getting current river race [{}]...", officialApiToken, e);
+      try {
+        return officialApi.getCurrentClanRiverRace(clanTag);
+      } catch (Exception ex) {
+        log.error("exception while getting current river race [{}]...", officialApiToken, e);
+        throw new IllegalStateException(e);
+      }
     }
   }
 

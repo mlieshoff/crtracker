@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.ClanMember;
-import jcrapi2.model.PlayerBattleLog;
-import jcrapi2.response.GetPlayerBattleLogResponse;
+import jcrapi2.api.intern.clans.info.Member;
+import jcrapi2.api.intern.players.battlelog.BattleLogResponse;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,16 +18,16 @@ public class BattlePlugin extends AbstractPlugin<BattlePluginEvent> {
 
   @Override
   public void onPluginEvent(Session session, BattlePluginEvent battlePluginEvent) {
-    ClanMember clanMember = battlePluginEvent.getClanMember();
-    String playerTag = clanMember.getTag();
-    List<PlayerBattleLog> clanMateBattles = new ArrayList<>();
-    List<PlayerBattleLog> pvpBattles = new ArrayList<>();
-    GetPlayerBattleLogResponse getPlayerBattleLogResponse = battlePluginEvent.getGetPlayerBattleLogResponse();
-    for (PlayerBattleLog playerBattleLog : getPlayerBattleLogResponse) {
-      if ("clanmate".equalsIgnoreCase(playerBattleLog.getType())) {
-        clanMateBattles.add(playerBattleLog);
+    Member member = battlePluginEvent.getMember();
+    String playerTag = member.getTag();
+    List<LogEntry> clanMateBattles = new ArrayList<>();
+    List<LogEntry> pvpBattles = new ArrayList<>();
+    BattleLogResponse getPlayerBattleLogResponse = battlePluginEvent.getBattleLogResponse();
+    for (LogEntry logEntry : getPlayerBattleLogResponse) {
+      if ("clanmate".equalsIgnoreCase(logEntry.getType())) {
+        clanMateBattles.add(logEntry);
       } else {
-        pvpBattles.add(playerBattleLog);
+        pvpBattles.add(logEntry);
       }
     }
     if (!clanMateBattles.isEmpty()) {

@@ -1,7 +1,7 @@
 package crtracker.plugins.member;
 
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.ClanMember;
+import jcrapi2.api.intern.clans.info.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,6 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClanMemberPluginEvent implements PluginEvent {
 
-  private final ClanMember clanMember;
+  private final Member member;
 
 }

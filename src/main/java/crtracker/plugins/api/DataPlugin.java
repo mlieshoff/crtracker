@@ -10,8 +10,8 @@ import crtracker.plugins.battle.BattlePluginEvent;
 import crtracker.plugins.clan.ClanPluginEvent;
 import crtracker.plugins.member.ClanMemberPluginEvent;
 import crtracker.plugins.riverrace.RiverRacePluginEvent;
-import jcrapi2.model.ClanMember;
-import jcrapi2.response.GetClanResponse;
+import jcrapi2.api.intern.clans.info.ClanResponse;
+import jcrapi2.api.intern.clans.info.Member;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,9 +29,9 @@ public class DataPlugin extends AbstractPlugin {
   public void runIntern(Session session) {
     String clanTag = configurationService.getClanTag();
     apiWrapper = configurationService.createApiWrapper();
-    GetClanResponse getClanResponse = apiWrapper.getClanData(clanTag);
-    pluginManager.fire(new ClanPluginEvent(getClanResponse));
-    for (ClanMember clanMember : getClanResponse.getMemberList()) {
+    ClanResponse clanResponse = apiWrapper.getClanData(clanTag);
+    pluginManager.fire(new ClanPluginEvent(clanResponse));
+    for (Member clanMember : clanResponse.getMemberList()) {
       pluginManager.fire(new ClanMemberPluginEvent(clanMember));
       pluginManager.fire(new BattlePluginEvent(clanMember, apiWrapper.getBattleLogFor(clanMember.getTag())));
     }

@@ -2,13 +2,13 @@ package crtracker.plugins.liveticker;
 
 import crtracker.integration.MessageService;
 import crtracker.plugins.messaging.MessagePluginEvent;
-import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.Getter;
 
 @Getter
-public class LiveTickerMessagePluginEvent extends MessagePluginEvent<PlayerBattleLog> {
+public class LiveTickerMessagePluginEvent extends MessagePluginEvent<LogEntry> {
 
-  public LiveTickerMessagePluginEvent(PlayerBattleLog message) {
+  public LiveTickerMessagePluginEvent(LogEntry message) {
     super(message);
   }
 

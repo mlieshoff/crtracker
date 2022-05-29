@@ -8,8 +8,8 @@ import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.CurrentClanRiverRaceClanParticipant;
-import jcrapi2.response.GetCurrentClanRiverRaceResponse;
+import jcrapi2.api.intern.clans.currentriverrace.CurrentRiverRaceResponse;
+import jcrapi2.api.intern.clans.currentriverrace.Participant;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,11 +21,11 @@ public class RiverRacePlugin extends AbstractPlugin<RiverRacePluginEvent> {
 
   @Override
   public void onPluginEvent(Session session, RiverRacePluginEvent riverRacePluginEvent) {
-    GetCurrentClanRiverRaceResponse
+    CurrentRiverRaceResponse
         getCurrentClanRiverRaceResponse =
-        riverRacePluginEvent.getGetCurrentClanRiverRaceResponse();
-    for (CurrentClanRiverRaceClanParticipant currentClanRiverRaceClanParticipant : getCurrentClanRiverRaceResponse
-        .getClan().getParticipants()) {
+        riverRacePluginEvent.getCurrentRiverRaceResponse();
+    for (Participant currentClanRiverRaceClanParticipant : getCurrentClanRiverRaceResponse.getClan()
+        .getParticipants()) {
       String playerTag = currentClanRiverRaceClanParticipant.getTag();
       int fame = currentClanRiverRaceClanParticipant.getFame();
       int repairPoints = currentClanRiverRaceClanParticipant.getRepairPoints();

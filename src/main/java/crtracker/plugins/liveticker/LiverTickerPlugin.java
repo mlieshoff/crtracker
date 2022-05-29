@@ -13,7 +13,7 @@ import crtracker.persistency.model.NumberMeasure;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
 import crtracker.plugins.battle.PvpBattlePluginEvent;
-import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,15 +31,15 @@ public class LiverTickerPlugin extends AbstractPlugin<PvpBattlePluginEvent> {
     NumberMeasure lastBattleIdMeasure = measureDao
         .getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_LAST_TIME_BATTLE, playerTag);
     long lastBattleTimeMillis = lastBattleIdMeasure != null ? lastBattleIdMeasure.getValue() : 0;
-    for (PlayerBattleLog playerBattleLog : liverTickerPluginEvent.getLigaBattles()) {
+    for (LogEntry logEntry : liverTickerPluginEvent.getLigaBattles()) {
       try {
-        Date battleTime = BATTLE_TIME_FORMAT.parse(playerBattleLog.getBattleTime());
+        Date battleTime = BATTLE_TIME_FORMAT.parse(logEntry.getBattleTime());
         long battleTimeMillis = battleTime.getTime();
         if (battleTimeMillis > lastBattleTimeMillis) {
           lastBattleTimeMillis = battleTimeMillis;
           measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.MEMBER_LAST_TIME_BATTLE.getCode(),
               lastBattleTimeMillis);
-          pluginManager.fire(new LiveTickerMessagePluginEvent(playerBattleLog));
+          pluginManager.fire(new LiveTickerMessagePluginEvent(logEntry));
         }
       } catch (ParseException e) {
         log.warn("error while parsing battle time", e);

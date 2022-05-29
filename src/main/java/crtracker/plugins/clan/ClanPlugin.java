@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
 import crtracker.plugins.fluctuation.FluctuationPluginEvent;
-import jcrapi2.response.GetClanResponse;
+import jcrapi2.api.intern.clans.info.ClanResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -15,8 +15,8 @@ public class ClanPlugin extends AbstractPlugin<ClanPluginEvent> {
 
   @Override
   public void onPluginEvent(Session session, ClanPluginEvent clanPluginEvent) {
-    GetClanResponse getClanResponse = clanPluginEvent.getGetClanResponse();
-    pluginManager.fire(new FluctuationPluginEvent(getClanResponse.getMemberList()));
+    ClanResponse clanResponse = clanPluginEvent.getClanResponse();
+    pluginManager.fire(new FluctuationPluginEvent(clanResponse.getMemberList()));
   }
 
   @Override

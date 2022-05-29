@@ -18,7 +18,7 @@ import crtracker.persistency.model.StringMeasure;
 import crtracker.persistency.model.TextMeasure;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.ClanMember;
+import jcrapi2.api.intern.clans.info.Member;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,7 +30,7 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
 
   @Override
   public void onPluginEvent(Session session, FluctuationPluginEvent fluctuationPluginEvent) {
-    List<ClanMember> clanMembers = fluctuationPluginEvent.getClanMembers();
+    List<Member> clanMembers = fluctuationPluginEvent.getMembers();
     String clanTag = configurationService.getClanTag();
     TextMeasure
         oldMembers =
@@ -71,10 +71,10 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
     return names;
   }
 
-  private static String getClanMemberTags(List<ClanMember> clanMembers) {
+  private static String getClanMemberTags(List<Member> clanMembers) {
     Set<String> clanMemberTags = new TreeSet<>();
-    for (ClanMember clanMember : clanMembers) {
-      clanMemberTags.add(clanMember.getTag());
+    for (Member member : clanMembers) {
+      clanMemberTags.add(member.getTag());
     }
     return StringUtils.join(clanMemberTags, ",");
   }

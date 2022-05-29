@@ -2,7 +2,7 @@ package crtracker.plugins.battle;
 
 import java.util.List;
 import crtracker.plugin.PluginEvent;
-import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,6 +12,6 @@ public class PvpBattlePluginEvent implements PluginEvent {
 
   private final String playerTag;
 
-  private final List<PlayerBattleLog> ligaBattles;
+  private final List<LogEntry> ligaBattles;
 
 }

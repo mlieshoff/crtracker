@@ -13,7 +13,7 @@ import crtracker.persistency.model.NumberMeasure;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugin.PluginEvent;
 import crtracker.plugins.battle.ClanMateBattlePluginEvent;
-import jcrapi2.model.PlayerBattleLog;
+import jcrapi2.api.intern.players.battlelog.LogEntry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -32,14 +32,14 @@ public class LigaPlugin extends AbstractPlugin<ClanMateBattlePluginEvent> {
         lastLigaBattleIdMeasure =
         measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_LAST_TIME_LIGA_BATTLE, playerTag);
     long lastLigaBattleTimeMillis = lastLigaBattleIdMeasure != null ? lastLigaBattleIdMeasure.getValue() : 0;
-    for (PlayerBattleLog playerBattleLog : clanMateBattlePluginEvent.getLigaBattles()) {
+    for (LogEntry logEntry : clanMateBattlePluginEvent.getLigaBattles()) {
       try {
-        Date battleTime = BATTLE_TIME_FORMAT.parse(playerBattleLog.getBattleTime());
+        Date battleTime = BATTLE_TIME_FORMAT.parse(logEntry.getBattleTime());
         long battleTimeMillis = battleTime.getTime();
         if (battleTimeMillis > lastLigaBattleTimeMillis) {
           lastLigaBattleTimeMillis = battleTimeMillis;
-          int player1Crowns = playerBattleLog.getTeam().get(0).getCrowns();
-          int player2Crowns = playerBattleLog.getOpponent().get(0).getCrowns();
+          int player1Crowns = logEntry.getTeam().get(0).getCrowns();
+          int player2Crowns = logEntry.getOpponent().get(0).getCrowns();
           NumberMeasure
               ratingMeasure =
               measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.INTERN_TOURNAMENT, playerTag);
@@ -55,7 +55,7 @@ public class LigaPlugin extends AbstractPlugin<ClanMateBattlePluginEvent> {
               rating);
           measureDao.updateNumberMeasure(session, playerTag,
               CrTrackerTypes.MEMBER_LAST_TIME_LIGA_BATTLE.getCode(), lastLigaBattleTimeMillis);
-          pluginManager.fire(new LigaMessagePluginEvent(playerBattleLog));
+          pluginManager.fire(new LigaMessagePluginEvent(logEntry));
         }
       } catch (ParseException e) {
         log.warn("error while parsing battle time", e);
