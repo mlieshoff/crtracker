@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
 import crtracker.persistency.model.StringMeasure;
@@ -37,12 +38,8 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
         measureDao.updateTextMeasure(session, clanTag, CrTrackerTypes.CLAN_MEMBERS.getCode(),
             getClanMemberTags(clanMembers));
     if (oldMembers != null) {
-      Set<String> old = new TreeSet<>();
-      old.addAll(asList(oldMembers.getValue().split(",")));
-
-      Set<String> current = new TreeSet<>();
-      current.addAll(asList(getClanMemberTags(clanMembers).split(",")));
-
+      Set<String> old = new TreeSet<>(asList(oldMembers.getValue().split(",")));
+      Set<String> current = new TreeSet<>(asList(getClanMemberTags(clanMembers).split(",")));
       if (!current.equals(old)) {
         Collection<String> newMembers = CollectionUtils.subtract(current, old);
         Collection<String> leftMembers = CollectionUtils.subtract(old, current);
@@ -58,7 +55,7 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
 
   private Collection<String> resolveMemberTags(Session session, Collection<String> memberTags) {
     Collection<String> names = new TreeSet<>();
-    for (String memberTag : memberTags) {
+    memberTags.forEach(memberTag -> {
       log.info("try to resolve tag: {}", memberTag);
       StringMeasure name = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.MEMBER_NICK, memberTag);
       if (name != null) {
@@ -67,15 +64,12 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
         names.add(memberTag + " (Springer)");
         log.warn("something weird while resolving name for tag: " + memberTag);
       }
-    }
+    });
     return names;
   }
 
-  private static String getClanMemberTags(List<Member> clanMembers) {
-    Set<String> clanMemberTags = new TreeSet<>();
-    for (Member member : clanMembers) {
-      clanMemberTags.add(member.getTag());
-    }
+  private static String getClanMemberTags(List<Member> members) {
+    Set<String> clanMemberTags = members.stream().map(Member::getTag).collect(Collectors.toCollection(TreeSet::new));
     return StringUtils.join(clanMemberTags, ",");
   }
 

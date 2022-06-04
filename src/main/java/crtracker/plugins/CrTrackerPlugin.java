@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CrTrackerPlugin extends AbstractPlugin implements ApplicationRunner {
 
-  private static final String[] ARGS = new String[]{"../server_credentials/conf/crtracker/key",
+  private static final String[] ARGS = {"../server_credentials/conf/crtracker/key",
       "../server/apps/crtracker/conf/config.properties",
       "../server_credentials/conf/crtracker/encrypted/test_credentials.properties",
       "/tmp/status.txt",
