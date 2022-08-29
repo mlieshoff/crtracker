@@ -7,8 +7,8 @@
         </Console>
 
         <RollingFile name="RollingFile"
-                     fileName="/tmp/crtracker.log"
-                     filePattern="/tmp/$${date:yyyy-MM}/crtracker-%d{-dd-MMMM-yyyy}-%i.log.gz">
+                     fileName="/var/log/crtracker.log"
+                     filePattern="/var/log/$${date:yyyy-MM}/crtracker-%d{-dd-MMMM-yyyy}-%i.log.gz">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
