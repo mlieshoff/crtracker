@@ -1,6 +1,8 @@
 package crtracker.integration.clashroyale;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import jcrapi2.JCrApi;
 import jcrapi2.api.intern.clans.ClanApi;
 import jcrapi2.api.intern.clans.currentriverrace.CurrentRiverRaceRequest;
@@ -25,18 +27,18 @@ public class OfficialApi {
     playerApi = jCrApi.getApi(PlayerApi.class);
   }
 
-  public ClanResponse getClanData(String clanTag) throws ExecutionException, InterruptedException {
-    return clanApi.findByTag(ClanRequest.builder(clanTag).build()).get();
+  public ClanResponse getClanData(String clanTag) throws ExecutionException, InterruptedException, TimeoutException {
+    return clanApi.findByTag(ClanRequest.builder(clanTag).build()).get(10, TimeUnit.SECONDS);
   }
 
   public BattleLogResponse getPlayerBattleLogData(String playerTag)
-      throws ExecutionException, InterruptedException {
-    return playerApi.getBattleLog(BattleLogRequest.builder(playerTag).build()).get();
+      throws ExecutionException, InterruptedException, TimeoutException {
+    return playerApi.getBattleLog(BattleLogRequest.builder(playerTag).build()).get(10, TimeUnit.SECONDS);
   }
 
   public CurrentRiverRaceResponse getCurrentClanRiverRace(String clanTag)
-      throws ExecutionException, InterruptedException {
-    return clanApi.getCurrentRiverRace(CurrentRiverRaceRequest.builder(clanTag).build()).get();
+      throws ExecutionException, InterruptedException, TimeoutException {
+    return clanApi.getCurrentRiverRace(CurrentRiverRaceRequest.builder(clanTag).build()).get(10, TimeUnit.SECONDS);
   }
 
 }
