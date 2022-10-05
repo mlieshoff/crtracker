@@ -3,7 +3,6 @@ package crtracker.service;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,7 @@ public class ConfigurationService {
     System.setProperty("org.mili.database.password", credentials.getProperty("database.password"));
     System.setProperty("org.mili.database.url", config.getProperty("database.url"));
 
-    Configuration configuration = new AnnotationConfiguration();
+    Configuration configuration = new Configuration();
     configuration.addAnnotatedClass(NumberMeasure.class);
     configuration.addAnnotatedClass(DecimalMeasure.class);
     configuration.addAnnotatedClass(StringMeasure.class);

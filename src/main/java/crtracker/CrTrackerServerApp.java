@@ -16,7 +16,7 @@ public class CrTrackerServerApp {
   public static void main(String[] args) {
     if (new File(args[3]).exists()) {
       if (!ConfigurationService.TEST) {
-        throw new IllegalStateException("GotYa is already running!");
+        throw new IllegalStateException("CrTracker is already running!");
       }
     }
     SpringApplicationBuilder app = new SpringApplicationBuilder(CrTrackerServerApp.class)
