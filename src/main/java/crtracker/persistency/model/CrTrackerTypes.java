@@ -22,32 +22,33 @@ package crtracker.persistency.model;
  */
 public enum CrTrackerTypes implements MeasureType {
 
-    ID(-1),
-    CLAN_MEMBERS(1),
-    CLAN_DONATIONS(2),
-    MEMBER_DONATIONS(3),
-    MEMBER_CROWNS(4),
-    MEMBER_NICK(5),
-    MEMBER_BANNED_NICK(6),
-    MEMBER_ROLE(7),
-    CHALLENGE(8),
-    INTERN_TOURNAMENT(9),
-    MEMBER_LAST_TIME_LIGA_BATTLE(10),
-    MEMBER_LAST_TIME_BATTLE(11),
-    MEMBER_RIVER_WARS_SHIP_ATTACKS(12),
-    MEMBER_RIVER_WARS_SHIP_REPAIRPOINTS(13),
-    MEMBER_RIVER_WARS_FAME(14),
-    ;
+  ID(-1),
+  CLAN_MEMBERS(1),
+  CLAN_DONATIONS(2),
+  MEMBER_DONATIONS(3),
+  MEMBER_CROWNS(4),
+  MEMBER_NICK(5),
+  MEMBER_BANNED_NICK(6),
+  MEMBER_ROLE(7),
+  CHALLENGE(8),
+  INTERN_TOURNAMENT(9),
+  MEMBER_LAST_TIME_LIGA_BATTLE(10),
+  MEMBER_LAST_TIME_BATTLE(11),
+  MEMBER_RIVER_WARS_SHIP_ATTACKS(12),
+  MEMBER_RIVER_WARS_SHIP_REPAIRPOINTS(13),
+  MEMBER_RIVER_WARS_FAME(14),
+  MEMBER_LAST_10_RIVER_WARS_FAME(15),
+  ;
 
-    private int code;
+  private int code;
 
-    CrTrackerTypes(int code) {
-        this.code = code;
-    }
+  CrTrackerTypes(int code) {
+    this.code = code;
+  }
 
-    @Override
-    public int getCode() {
-        return code;
-    }
-    
+  @Override
+  public int getCode() {
+    return code;
+  }
+
 }

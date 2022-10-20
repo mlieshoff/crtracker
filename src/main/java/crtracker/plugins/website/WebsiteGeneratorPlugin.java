@@ -54,6 +54,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     Map<String, String> tag2Name = resolveMemberTags(session, asList(members.getValue().split(",")));
     List<HighscoreEntry> model = new ArrayList<>();
     List<HighscoreEntry> tournamentModel = new ArrayList<>();
+    List<HighscoreEntry> warModel = new ArrayList<>();
     Pair<DateTime, DateTime> calendarWeek = CipherUtil.getCalendarWeekFromTo(new Date());
     for (Map.Entry<String, String> entry : tag2Name.entrySet()) {
       StringMeasure idMeasure = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.ID, entry.getKey());
@@ -76,6 +77,9 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
       NumberMeasure
           tournamentMeasure =
           measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.INTERN_TOURNAMENT, entry.getKey());
+      NumberMeasure
+          warMeasure =
+          measureDao.getCurrentNumberMeasure(session, CrTrackerTypes.MEMBER_LAST_10_RIVER_WARS_FAME, entry.getKey());
 
       Date joiningDate = idMeasure.getMeasureId().getModifiedAt();
 
@@ -101,10 +105,14 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
 
       long tournamentCrowns = tournamentMeasure != null ? tournamentMeasure.getValue() : 0;
 
+      long warScore = warMeasure != null ? warMeasure.getValue() : 0;
+
       model.add(
           new HighscoreEntry(entry.getKey(), entry.getValue(), donations, fame, repairPoints, role, joiningDate));
       tournamentModel
           .add(new HighscoreEntry(entry.getKey(), entry.getValue(), tournamentCrowns, 0, 0, role, joiningDate));
+      warModel
+          .add(new HighscoreEntry(entry.getKey(), entry.getValue(), 0, warScore, 0, role, joiningDate));
     }
     model.sort((o1, o2) -> Long.compare(o2.getSortNumber(), o1.getSortNumber()));
     rankThem(model);
@@ -112,7 +120,10 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     tournamentModel.sort((o1, o2) -> Long.compare(o2.getDonations(), o1.getDonations()));
     rankThem(tournamentModel);
 
-    String website = generateSite(model, tournamentModel);
+    warModel.sort((o1, o2) -> Long.compare(o2.getFame(), o1.getFame()));
+    rankThem(warModel);
+
+    String website = generateSite(model, tournamentModel, warModel);
     ftpService.upload(
         configurationService.getConfig().getProperty("ftp.server.url"),
         Integer.valueOf(configurationService.getConfig().getProperty("ftp.server.port")),
@@ -152,7 +163,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     }
   }
 
-  private String generateSite(List<HighscoreEntry> model, List<HighscoreEntry> tournamentModel) {
+  private String generateSite(List<HighscoreEntry> model, List<HighscoreEntry> tournamentModel, List<HighscoreEntry> warModel) {
     StringBuilder s1 = new StringBuilder();
     s1.append("<table class=\"table table-inverse table-striped\">");
     s1.append("<thead>");
@@ -237,6 +248,39 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     s.append("</tbody>");
     s.append("</table>");
 
+    StringBuilder s2 = new StringBuilder();
+    s2.append("<table class=\"table table-inverse table-striped\">");
+    s2.append("<thead>");
+    s2.append("<tr>");
+    s2.append("<th>");
+    s2.append("#");
+    s2.append("</th>");
+    s2.append("<th>");
+    s2.append("Nick");
+    s2.append("</th>");
+    s2.append("<th>");
+    s2.append("Kriegsruhm");
+    s2.append("</th>");
+    s2.append("</tr>");
+    s2.append("</thead>");
+    s2.append("<tbody>");
+    for (HighscoreEntry highscoreEntry : warModel) {
+      s2.append("<tr>");
+      s2.append("<th scope=\"row\">");
+      s2.append(highscoreEntry.getRank());
+      s2.append(".</th>");
+      s2.append("<td>");
+      s2.append(String.format("<a class=\"h4\" href=\"https://spy.deckshop.pro/player/%s\">%s</a>",
+          highscoreEntry.getMemberTag().replace("#", ""), highscoreEntry.getMemberName()));
+      s2.append("</td>");
+      s2.append("<td>");
+      s2.append(format.format(highscoreEntry.getFame()));
+      s2.append("</td>");
+      s2.append("</tr>");
+    }
+    s2.append("</tbody>");
+    s2.append("</table>");
+
     String template = "<!DOCTYPE html>\n" +
         "<html lang=\"en\">\n" +
         "  <head>\n" +
@@ -299,6 +343,8 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         "%s" +
         "    <h3 align=\"center\">Wochen-Highscore vom (%s)</h3>\n" +
         "%s" +
+        "    <h3 align=\"center\">Kriegs-Highscore</h3>\n" +
+        "%s" +
         "<hr/><p/>%s" +
         "\n" +
         "    <!-- Optional JavaScript -->\n" +
@@ -328,7 +374,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         "            </p>\n" +
         "        </div>\n" +
         "    </footer>";
-    return String.format(template, s1, new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), s, footer);
+    return String.format(template, s1, new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), s, s2, footer);
   }
 
   private String action(HighscoreEntry highscoreEntry) {

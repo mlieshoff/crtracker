@@ -9,6 +9,7 @@ import crtracker.plugin.AbstractPlugin;
 import crtracker.plugins.battle.BattlePluginEvent;
 import crtracker.plugins.fluctuation.FluctuationPluginEvent;
 import crtracker.plugins.member.ClanMemberPluginEvent;
+import crtracker.plugins.riverrace.RiverRaceLogPluginEvent;
 import crtracker.plugins.riverrace.RiverRacePluginEvent;
 import jcrapi2.api.intern.clans.info.ClanResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class DataPlugin extends AbstractPlugin {
       pluginManager.fire(new BattlePluginEvent(member, apiWrapper.getBattleLogFor(member.getTag())));
     });
     pluginManager.fire(new RiverRacePluginEvent(apiWrapper.getCurrentClanRiverRace(clanTag)));
+    pluginManager.fire(new RiverRaceLogPluginEvent(apiWrapper.getRiverRaceLog(clanTag)));
     pluginManager.fire(new FluctuationPluginEvent(clanResponse.getMemberList()));
   }
 

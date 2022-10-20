@@ -27,10 +27,16 @@ public class PluginManager {
     boolean consumed = false;
     for (Plugin plugin : plugins.values()) {
       if (plugin.canHandlePluginEvent(pluginEvent)) {
-        consumed = true;
-        log.info("plugin {} handles event {}.", plugin.getClass().getSimpleName(),
-            pluginEvent.getClass().getSimpleName());
-        plugin.onPluginEvent(PluginContext.get(), pluginEvent);
+        String pluginName = plugin.getClass().getSimpleName();
+        String pluginEventName = pluginEvent.getClass().getSimpleName();
+        try {
+          log.info("plugin {} tries to handle event {}.", pluginName, pluginEventName);
+          plugin.onPluginEvent(PluginContext.get(), pluginEvent);
+          log.info("plugin {} handled event {}.", pluginName, pluginEventName);
+          consumed = true;
+        } catch (Exception e) {
+          log.error("plugin {} throws exception while handling event {}.", pluginName, pluginEventName);
+        }
       }
     }
     if (!consumed) {

@@ -3,6 +3,7 @@ package crtracker.integration;
 import crtracker.integration.clashroyale.OfficialApi;
 import jcrapi2.api.intern.clans.currentriverrace.CurrentRiverRaceResponse;
 import jcrapi2.api.intern.clans.info.ClanResponse;
+import jcrapi2.api.intern.clans.riverracelog.RiverRaceLogResponse;
 import jcrapi2.api.intern.players.battlelog.BattleLogResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +55,7 @@ public class ApiWrapper {
 
   public CurrentRiverRaceResponse getCurrentClanRiverRace(String clanTag) {
     try {
-      log.info("try get battle log data from official api...");
+      log.info("try get river race data from official api...");
       return proxiedApi.getCurrentClanRiverRace(clanTag);
     } catch (Exception e) {
       log.error("catched exception while getting current river race [{}]...", proxyApiUrl, e);
@@ -62,6 +63,21 @@ public class ApiWrapper {
         return officialApi.getCurrentClanRiverRace(clanTag);
       } catch (Exception ex) {
         log.error("exception while getting current river race [{}]...", officialApiUrl, e);
+        throw new IllegalStateException(e);
+      }
+    }
+  }
+
+  public RiverRaceLogResponse getRiverRaceLog(String clanTag) {
+    try {
+      log.info("try get river race log data from official api...");
+      return proxiedApi.getRiverRaceLog(clanTag);
+    } catch (Exception e) {
+      log.error("catched exception while getting current river race log [{}]...", proxyApiUrl, e);
+      try {
+        return officialApi.getRiverRaceLog(clanTag);
+      } catch (Exception ex) {
+        log.error("exception while getting river race log [{}]...", officialApiUrl, e);
         throw new IllegalStateException(e);
       }
     }
