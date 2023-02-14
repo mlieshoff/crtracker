@@ -41,9 +41,4 @@ public class DatabaseCheckPlugin extends AbstractPlugin {
     pluginManager.fire(new AlertPluginEvent(s.toString()));
   }
 
-  @Override
-  public boolean canHandlePluginEvent(PluginEvent pluginEvent) {
-    return false;
-  }
-
 }
