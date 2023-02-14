@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.util.Scanner;
 import crtracker.plugin.AbstractPlugin;
 import crtracker.plugins.messaging.AlertPluginEvent;
 
@@ -52,8 +53,9 @@ public class EnvironmentCheckPlugin extends AbstractPlugin {
   }
 
   public static String execCmd(String cmd) throws IOException {
-    java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A");
-    return s.hasNext() ? s.next() : "";
+    try (Scanner scanner = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A")) {
+      return scanner.hasNext() ? scanner.next() : "";
+    }
   }
 
   static long getGcCount() {
