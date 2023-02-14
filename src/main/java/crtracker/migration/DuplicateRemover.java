@@ -44,10 +44,8 @@ public class DuplicateRemover {
     }
 
     private boolean compare(String current, String old) {
-        Set<String> oldSet = new TreeSet<>();
-        oldSet.addAll(asList(old.split(",")));
-        Set<String> currentSet = new TreeSet<>();
-        currentSet.addAll(asList(current.split(",")));
+        Set<String> oldSet = new TreeSet<>(asList(old.split(",")));
+        Set<String> currentSet = new TreeSet<>(asList(current.split(",")));
         return oldSet.equals(currentSet);
     }
 
