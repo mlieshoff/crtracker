@@ -50,7 +50,7 @@ public class DiscordMessageService {
   }
 
   private long getChannelId(String channelName) {
-    return Long.valueOf(configurationService.getConfig().getProperty(channelName));
+    return Long.parseLong(configurationService.getConfig().getProperty(channelName));
   }
 
   private DiscordApi getBot(ConfigurationService configurationService) throws Exception {

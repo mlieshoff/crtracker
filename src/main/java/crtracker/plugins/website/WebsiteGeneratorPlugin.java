@@ -126,7 +126,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     String website = generateSite(model, tournamentModel, warModel);
     ftpService.upload(
         configurationService.getConfig().getProperty("ftp.server.url"),
-        Integer.valueOf(configurationService.getConfig().getProperty("ftp.server.port")),
+        Integer.parseInt(configurationService.getConfig().getProperty("ftp.server.port")),
         configurationService.getCredentials().getProperty("ftp.server.username"),
         configurationService.getCredentials().getProperty("ftp.server.password"),
         configurationService.getConfig().getProperty("ftp.server.folder") + "/index.html",
