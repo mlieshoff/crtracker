@@ -13,6 +13,8 @@ import crtracker.plugins.messaging.AlertPluginEvent;
 @Service
 public class EnvironmentCheckPlugin extends AbstractPlugin {
 
+  private static final long ONE_MEGABYTE_IN_BYTES = 1024 << 10;
+
   @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 15)
   public void run() {
     super.run();
@@ -76,7 +78,7 @@ public class EnvironmentCheckPlugin extends AbstractPlugin {
 
   static long getCurrentlyAllocatedMemory() {
     Runtime runtime = Runtime.getRuntime();
-    return (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
+    return (runtime.totalMemory() - runtime.freeMemory()) / (ONE_MEGABYTE_IN_BYTES);
   }
 
 }
