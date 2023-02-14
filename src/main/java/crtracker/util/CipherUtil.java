@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Properties;
 import javax.crypto.Cipher;
@@ -47,8 +48,8 @@ public class CipherUtil {
     byte[] encryptedFile = FileUtils.readFileToByteArray(new File(credentialsFilename));
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     decryptOrEncrypt(cipher, Cipher.DECRYPT_MODE, new ByteArrayInputStream(encryptedFile), byteArrayOutputStream);
-    String decryptedFile = new String(byteArrayOutputStream.toByteArray());
-    credentialsProperties.load(new ByteArrayInputStream(decryptedFile.getBytes()));
+    String decryptedFile = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+    credentialsProperties.load(new ByteArrayInputStream(decryptedFile.getBytes(StandardCharsets.UTF_8)));
   }
 
   public static void saveCredentials(Properties credentialsProperties, String cipher, String credentialsFilename)
@@ -57,14 +58,15 @@ public class CipherUtil {
     credentialsProperties.store(stringWriter, null);
     String decryptedFile = stringWriter.toString();
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    decryptOrEncrypt(cipher, Cipher.ENCRYPT_MODE, new ByteArrayInputStream(decryptedFile.getBytes()),
+    decryptOrEncrypt(cipher, Cipher.ENCRYPT_MODE, new ByteArrayInputStream(decryptedFile.getBytes(
+            StandardCharsets.UTF_8)),
         byteArrayOutputStream);
     FileUtils.writeByteArrayToFile(new File(credentialsFilename), byteArrayOutputStream.toByteArray());
   }
 
   private static void decryptOrEncrypt(String key, int mode, InputStream inputStream, OutputStream outputStream)
       throws Exception {
-    DESKeySpec dks = new DESKeySpec(key.getBytes());
+    DESKeySpec dks = new DESKeySpec(key.getBytes(StandardCharsets.UTF_8));
     SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
     SecretKey desKey = skf.generateSecret(dks);
     Cipher cipher = Cipher.getInstance("DES");
