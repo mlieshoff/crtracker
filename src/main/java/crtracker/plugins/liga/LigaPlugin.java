@@ -46,11 +46,8 @@ public class LigaPlugin extends AbstractPlugin<ClanMateBattlePluginEvent> {
           long rating = ratingMeasure != null ? ratingMeasure.getValue() : 0;
           if (player1Crowns > player2Crowns) {
             rating += player1Crowns;
-          } else if (player1Crowns < player2Crowns) {
-            rating += player2Crowns;
-          } else {
-            rating += player1Crowns;
-          }
+          } else
+            rating += Math.max(player1Crowns, player2Crowns);
           measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.INTERN_TOURNAMENT.getCode(),
               rating);
           measureDao.updateNumberMeasure(session, playerTag,
