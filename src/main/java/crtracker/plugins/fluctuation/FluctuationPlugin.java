@@ -62,7 +62,7 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
         names.add(name.getValue());
       } else {
         names.add(memberTag + " (Springer)");
-        log.warn("something weird while resolving name for tag: " + memberTag);
+        log.warn("something weird while resolving name for tag: {} ", memberTag);
       }
     });
     return names;

@@ -29,7 +29,7 @@ public class MessageService extends BaseService {
         return null;
       });
     } catch (ServiceException e) {
-      log.warn("Could not send alert: %s", message, e);
+      log.warn("Could not send alert: {}}", message, e);
     }
   }
 
@@ -44,7 +44,7 @@ public class MessageService extends BaseService {
         return null;
       });
     } catch (ServiceException e) {
-      log.warn("Could not send welcome: %s", message, e);
+      log.warn("Could not send welcome: {}", message, e);
     }
   }
 
@@ -59,7 +59,7 @@ public class MessageService extends BaseService {
         return null;
       });
     } catch (ServiceException e) {
-      log.warn("Could not send liga: %s", logEntry.getBattleTime(), e);
+      log.warn("Could not send liga: {}", logEntry.getBattleTime(), e);
     }
   }
 
@@ -74,7 +74,7 @@ public class MessageService extends BaseService {
         return null;
       });
     } catch (ServiceException e) {
-      log.warn("Could not send live ticker: %s", logEntry.getBattleTime(), e);
+      log.warn("Could not send live ticker: {}", logEntry.getBattleTime(), e);
     }
   }
 
