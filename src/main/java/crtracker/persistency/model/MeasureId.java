@@ -27,6 +27,8 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class MeasureId implements Serializable {
 
+    private static final long serialVersionUID = -363883773059499728L;
+
     private long hash;
 
     private Date modifiedAt;
