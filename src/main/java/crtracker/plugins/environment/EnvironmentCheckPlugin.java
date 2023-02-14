@@ -68,14 +68,14 @@ public class EnvironmentCheckPlugin extends AbstractPlugin {
   static long getReallyUsedMemory() {
     long before = getGcCount();
     System.gc();
+    // what the hell?
     while (getGcCount() == before) {
-      ;
     }
     return getCurrentlyAllocatedMemory();
   }
 
   static long getCurrentlyAllocatedMemory() {
-    final Runtime runtime = Runtime.getRuntime();
+    Runtime runtime = Runtime.getRuntime();
     return (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
   }
 
