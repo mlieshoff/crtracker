@@ -16,8 +16,8 @@ public enum Role {
     private static final ImmutableMap<String, Role> LOOKUP_BY_NAME;
 
     static {
-        ImmutableMap.Builder<Integer, Role> builder = ImmutableMap.<Integer, Role>builder();
-        ImmutableMap.Builder<String, Role> builder2 = ImmutableMap.<String, Role>builder();
+        ImmutableMap.Builder<Integer, Role> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Role> builder2 = ImmutableMap.builder();
         for (Role role : values()) {
             builder.put(role.getCode(), role);
             builder2.put(role.name(), role);

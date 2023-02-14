@@ -24,7 +24,7 @@ public class BasicChallengeHandler {
     CrTrackerTypes crTrackerTypes = getCrTrackerType(challengeDefinition);
     StringMeasure members = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.CLAN_MEMBERS, clanTag);
     List<SummarizeNumberEntry> model = new ArrayList<>();
-    for (String memberTag : asList(members.getValue().split(","))) {
+    for (String memberTag : members.getValue().split(",")) {
       NumberMeasure contributionMeasure = measureDao
           .getLastNumberMeasure(session, crTrackerTypes, memberTag, activationRange.getLeft(),
               activationRange.getRight());
