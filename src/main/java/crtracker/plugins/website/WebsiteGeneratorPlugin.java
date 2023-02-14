@@ -382,7 +382,9 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     Date oneWeekBefore = new DateTime().minusDays(7).toDate();
     Date joiningDate = highscoreEntry.getJoiningDate();
     String action = "<FONT COLOR=\"#00FF00\">WEEKLY COMPLETED</FONT>";
-    if (!joiningDate.after(oneWeekBefore)) {
+    if (joiningDate.after(oneWeekBefore)) {
+      return "<FONT COLOR=\"#00FF00\">*PROSPECT*</FONT>";
+    } else {
       long cwPoints = highscoreEntry.getFame() + highscoreEntry.getRepairPoints();
       boolean promotion = false;
       if (cwPoints >= 1200) {
@@ -400,8 +402,6 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
           return "<FONT COLOR=\"#00FF00\">PROMOTE</FONT>";
         }
       }
-    } else {
-      return "<FONT COLOR=\"#00FF00\">*PROSPECT*</FONT>";
     }
     return action;
   }
