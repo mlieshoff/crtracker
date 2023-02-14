@@ -18,13 +18,11 @@ import jcrapi2.connector.StandardConnector;
 
 public class OfficialApi {
 
-  private final JCrApi jCrApi;
-
   private final ClanApi clanApi;
   private final PlayerApi playerApi;
 
   public OfficialApi(String url, String token) {
-    jCrApi = new JCrApi(url, token, new StandardConnector());
+    JCrApi jCrApi = new JCrApi(url, token, new StandardConnector());
     clanApi = jCrApi.getApi(ClanApi.class);
     playerApi = jCrApi.getApi(PlayerApi.class);
   }

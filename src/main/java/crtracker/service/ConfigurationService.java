@@ -35,15 +35,13 @@ public class ConfigurationService {
   @Getter
   private final Properties credentials = new Properties();
 
-  private String cipher;
-
   private SessionFactory sessionFactory;
 
   public void initialize(String cipherFilename, String propertiesFilename, String credentialsFilename)
       throws Exception {
     log.info("initialize...");
 
-    cipher = CipherUtil.loadCipher(cipherFilename);
+    String cipher = CipherUtil.loadCipher(cipherFilename);
     CipherUtil.loadProperties(config, propertiesFilename);
     CipherUtil.loadCredentials(credentials, cipher, credentialsFilename);
 
