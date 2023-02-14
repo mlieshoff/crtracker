@@ -40,7 +40,7 @@ public enum CrTrackerTypes implements MeasureType {
   MEMBER_LAST_10_RIVER_WARS_FAME(15),
   ;
 
-  private int code;
+  private final int code;
 
   CrTrackerTypes(int code) {
     this.code = code;
