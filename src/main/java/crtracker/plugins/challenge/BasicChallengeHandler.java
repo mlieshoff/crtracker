@@ -7,7 +7,6 @@ import org.hibernate.Session;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import crtracker.persistency.dao.MeasureDao;
 import crtracker.persistency.model.CrTrackerTypes;
@@ -43,12 +42,8 @@ public class BasicChallengeHandler {
       }
     });
     rankThem(model);
-    for (Iterator<SummarizeNumberEntry> iterator = model.iterator(); iterator.hasNext(); ) {
-      SummarizeNumberEntry summarizeNumberEntry = iterator.next();
-      if (summarizeNumberEntry.getRank() > challengeDefinition.getChallengeSummaryNumber()) {
-        iterator.remove();
-      }
-    }
+    model.removeIf(
+        summarizeNumberEntry -> summarizeNumberEntry.getRank() > challengeDefinition.getChallengeSummaryNumber());
     return model;
   }
 
