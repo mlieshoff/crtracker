@@ -72,6 +72,7 @@ public class EnvironmentCheckPlugin extends AbstractPlugin {
     System.gc();
     // what the hell?
     while (getGcCount() == before) {
+      //
     }
     return getCurrentlyAllocatedMemory();
   }

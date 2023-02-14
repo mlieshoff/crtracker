@@ -8,10 +8,11 @@ public class PluginContext {
 
   public static void bind(Session session) {
     Session foundSession = holder.get();
-    if (foundSession != null) {
+    if (foundSession == null) {
+      holder.set(session);
+    } else {
       throw new IllegalStateException("session already bound!");
     }
-    holder.set(session);
   }
 
   public static void unbind() {
