@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import crtracker.persistency.dao.MeasureDao;
 import crtracker.plugin.AbstractPlugin;
-import crtracker.plugin.PluginEvent;
 import crtracker.plugins.messaging.AlertPluginEvent;
 
 @Service

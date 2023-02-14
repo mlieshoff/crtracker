@@ -1,7 +1,5 @@
 package crtracker.plugins.challenge;
 
-import static java.util.Arrays.asList;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.hibernate.Session;
 import org.joda.time.DateTime;
