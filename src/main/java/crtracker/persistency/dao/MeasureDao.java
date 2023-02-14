@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import crtracker.persistency.model.DecimalMeasure;
@@ -40,13 +41,13 @@ import crtracker.persistency.model.TextMeasure;
 public class MeasureDao {
 
   public StringMeasure updateStringMeasure(Session session, String id, int measureType, String value, Date modifiedAt) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateStringMeasure(session, hash, measureType, value, modifiedAt);
   }
 
   public StringMeasure updateStringMeasure(Session session, String id, int measureType, String value) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateStringMeasure(session, hash, measureType, value, new Date());
   }
@@ -89,13 +90,13 @@ public class MeasureDao {
   }
 
   public NumberMeasure updateNumberMeasure(Session session, String id, int measureType, long value) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateNumberMeasure(session, hash, measureType, value, new Date());
   }
 
   public NumberMeasure updateNumberMeasure(Session session, String id, int measureType, long value, Date modifiedAt) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateNumberMeasure(session, hash, measureType, value, modifiedAt);
   }
@@ -134,14 +135,14 @@ public class MeasureDao {
   }
 
   public DecimalMeasure updateDecimalMeasure(Session session, String id, int measureType, double value) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateDecimalMeasure(session, hash, measureType, value, null);
   }
 
   public DecimalMeasure updateDecimalMeasure(Session session, String id, int measureType, double value,
                                              Date modifiedAt) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateDecimalMeasure(session, hash, measureType, value, modifiedAt);
   }
@@ -180,13 +181,13 @@ public class MeasureDao {
   }
 
   public TextMeasure updateTextMeasure(Session session, String id, int measureType, String value, Date modifiedAt) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateTextMeasure(session, hash, measureType, value, modifiedAt);
   }
 
   public TextMeasure updateTextMeasure(Session session, String id, int measureType, String value) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     saveId(session, id, hash);
     return internUpdateTextMeasure(session, hash, measureType, value, new Date());
   }
@@ -225,42 +226,42 @@ public class MeasureDao {
   }
 
   public StringMeasure getCurrentStringMeasure(Session session, MeasureType measureType, String id) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return (StringMeasure) session.createQuery("from " + StringMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type order by t.measureId.modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setMaxResults(1).uniqueResult();
   }
 
   public List<StringMeasure> getLastStringMeasures(Session session, MeasureType measureType, String id, int limit) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return session.createQuery("from " + StringMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type order by t.measureId.modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setMaxResults(limit).list();
   }
 
   public List<TextMeasure> getLastTextMeasures(Session session, MeasureType measureType, String id, int limit) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return session.createQuery("from " + TextMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type order by t.measureId.modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setMaxResults(limit).list();
   }
 
   public NumberMeasure getCurrentNumberMeasure(Session session, MeasureType measureType, String id) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return (NumberMeasure) session.createQuery("from " + NumberMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type order by modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setMaxResults(1).uniqueResult();
   }
 
   public TextMeasure getCurrentTextMeasure(Session session, MeasureType measureType, String id) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return (TextMeasure) session.createQuery("from " + TextMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type order by t.measureId.modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setMaxResults(1).uniqueResult();
   }
 
   public List<NumberMeasure> getLastNumberMeasures(Session session, MeasureType measureType, String id, int limit) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return session.createQuery("from " + NumberMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type order by modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setMaxResults(limit).list();
@@ -268,7 +269,7 @@ public class MeasureDao {
 
   public NumberMeasure getLastNumberMeasure(Session session, MeasureType measureType, String id, DateTime from,
                                             DateTime to) {
-    long hash = Hashing.md5().hashString(id, Charset.forName("UTF-8")).asLong();
+    long hash = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asLong();
     return (NumberMeasure) session.createQuery("from " + NumberMeasure.class.getName()
         + " t where t.measureId.hash=:hash and t.measureId.type=:type and modifiedAt>=:from and modifiedAt<=:to order by modifiedAt desc")
         .setLong("hash", hash).setInteger("type", measureType.getCode()).setTimestamp("from", from.toDate())
