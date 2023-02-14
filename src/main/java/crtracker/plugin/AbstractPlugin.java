@@ -26,7 +26,7 @@ public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>
   public void onStart() {
     String pluginClassname = getClass().getName();
     log.info("{}: start onStart.", pluginClassname);
-    doInTransaction(session -> startIntern(session));
+    doInTransaction(this::startIntern);
     log.info("{}: stop onStart.", pluginClassname);
   }
 
@@ -34,7 +34,7 @@ public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>
   public void onStop() {
     String pluginClassname = getClass().getName();
     log.info("{}: start onStop.", pluginClassname);
-    doInTransaction(session -> stopIntern(session));
+    doInTransaction(this::stopIntern);
     log.info("{}: stop onStop.", pluginClassname);
   }
 
@@ -42,7 +42,7 @@ public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>
   public void run() {
     String pluginClassname = getClass().getName();
     log.info("{}: start run.", pluginClassname);
-    doInTransaction(session -> runIntern(session));
+    doInTransaction(this::runIntern);
     log.info("{}: stop run.", pluginClassname);
   }
 

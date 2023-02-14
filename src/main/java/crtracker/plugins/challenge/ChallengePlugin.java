@@ -81,7 +81,7 @@ public class ChallengePlugin extends AbstractPlugin {
   private void startNewChallengesIfNeeded(Session session, List<RunningChallenge> runningChallenges,
                                           Map<Long, ChallengeDefinition> challengeDefinitions, DateTime now) {
     Set<Long> runningChallengeIds = runningChallenges.stream()
-        .map(runningChallenge -> runningChallenge.getChallengeId()).collect(Collectors.toSet());
+        .map(RunningChallenge::getChallengeId).collect(Collectors.toSet());
     for (Map.Entry<Long, ChallengeDefinition> entry : challengeDefinitions.entrySet()) {
       long challengeId = entry.getKey();
       ChallengeDefinition challengeDefinition = entry.getValue();

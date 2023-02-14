@@ -69,7 +69,7 @@ public class WebsiteLoginCheckPlugin extends AbstractPlugin {
 
   private String getMetaContent(String metaName, String content) {
     AtomicReference<String> value = new AtomicReference<>();
-    TextProcessing.builder().one("name=\"" + metaName + "\" content=\"", "\"", s -> value.set(s)).build()
+    TextProcessing.builder().one("name=\"" + metaName + "\" content=\"", "\"", value::set).build()
         .start(content);
     return value.get();
   }
