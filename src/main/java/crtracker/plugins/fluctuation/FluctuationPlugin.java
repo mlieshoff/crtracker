@@ -44,10 +44,10 @@ public class FluctuationPlugin extends AbstractPlugin<FluctuationPluginEvent> {
         Collection<String> newMembers = CollectionUtils.subtract(current, old);
         Collection<String> leftMembers = CollectionUtils.subtract(old, current);
         if (!newMembers.isEmpty()) {
-          pluginManager.fire(new WelcomeMessagePluginEvent(resolveMemberTags(session, newMembers)));
+          eventBus.fire(new WelcomeMessagePluginEvent(resolveMemberTags(session, newMembers)));
         }
         if (!leftMembers.isEmpty()) {
-          pluginManager.fire(new LeaveMessagePluginEvent(resolveMemberTags(session, leftMembers)));
+          eventBus.fire(new LeaveMessagePluginEvent(resolveMemberTags(session, leftMembers)));
         }
       }
     }

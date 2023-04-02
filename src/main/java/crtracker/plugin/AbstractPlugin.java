@@ -9,10 +9,10 @@ import crtracker.service.ConfigurationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T> {
+public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>, PluginEventListener<T> {
 
   @Autowired
-  protected PluginManager pluginManager;
+  protected EventBus eventBus;
 
   @Autowired
   protected ConfigurationService configurationService;
@@ -55,7 +55,7 @@ public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>
       action.execute(session);
       transaction.commit();
     } catch (Exception e) {
-      pluginManager.fire(new AlertPluginEvent("Error occured: " + pluginClassname + " -> " + e.getMessage()));
+      eventBus.fire(new AlertPluginEvent("Error occured: " + pluginClassname + " -> " + e.getMessage()));
       log.error("{}: exception occured", pluginClassname, e);
       if (transaction != null) {
         transaction.rollback();
@@ -66,7 +66,7 @@ public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>
     }
   }
 
-  public void startIntern(Session session) throws Exception {
+  public void startIntern(Session session) {
 
   }
 
@@ -74,7 +74,7 @@ public abstract class AbstractPlugin<T extends PluginEvent> implements Plugin<T>
 
   }
 
-  public void stopIntern(Session session) throws Exception {
+  public void stopIntern(Session session) {
 
   }
 

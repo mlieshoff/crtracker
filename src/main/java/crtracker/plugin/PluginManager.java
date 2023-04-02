@@ -1,47 +1,62 @@
 package crtracker.plugin;
 
+import org.mili.utils.sql.service.MigrationService;
+import org.mili.utils.sql.service.ServiceException;
+import org.mili.utils.sql.service.ServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import javax.annotation.PreDestroy;
+import java.util.concurrent.atomic.AtomicReference;
+import crtracker.service.ConfigurationService;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 public class PluginManager {
 
+  private static final String[] ARGS = {"../server_credentials/conf/crtracker/key",
+      "../server/apps/crtracker/conf/config.properties",
+      "../server_credentials/conf/crtracker/encrypted/test_credentials.properties",
+      "/tmp/status.txt",
+      "-Dtest=true"
+  };
+
+  public static final AtomicReference<String[]> ARGS_HOLDER = new AtomicReference<>();
+
   @Autowired
   private Map<Class<? extends Plugin<?>>, Plugin<?>> plugins;
 
-  public void onStart() {
+  @Autowired
+  private EventBus eventBus;
+
+  @Autowired
+  private ConfigurationService configurationService;
+
+  @EventListener(ApplicationReadyEvent.class)
+  public void onStart() throws Exception {
+    String[] args = ARGS_HOLDER.get();
+    if (args == null) {
+      args = ARGS;
+      ARGS_HOLDER.set(args);
+    }
+    configurationService.initialize(args[0], args[1], args[2]);
+    try {
+      ServiceFactory.getService(MigrationService.class).migrate(false, PluginManager.class);
+    } catch (ServiceException e) {
+      throw new RuntimeException(e);
+    }
+//    eventBus.fire(new AlertPluginEvent("CrTracker starting..."));
     plugins.values().forEach(Plugin::onStart);
   }
 
   @PreDestroy
   public void onStop() {
     plugins.values().forEach(Plugin::onStop);
-  }
-
-  public void fire(PluginEvent pluginEvent) {
-    boolean consumed = false;
-    for (Plugin plugin : plugins.values()) {
-      if (plugin.canHandlePluginEvent(pluginEvent)) {
-        String pluginName = plugin.getClass().getSimpleName();
-        String pluginEventName = pluginEvent.getClass().getSimpleName();
-        try {
-          log.info("plugin {} tries to handle event {}.", pluginName, pluginEventName);
-          plugin.onPluginEvent(PluginContext.get(), pluginEvent);
-          log.info("plugin {} handled event {}.", pluginName, pluginEventName);
-          consumed = true;
-        } catch (Exception e) {
-          log.error("plugin {} throws exception while handling event {}.", pluginName, pluginEventName);
-        }
-      }
-    }
-    if (!consumed) {
-      log.warn("event {} was not consumed.", pluginEvent.getClass().getSimpleName());
-    }
+//    eventBus.fire(new AlertPluginEvent("CrTracker stopping..."));
   }
 
 }

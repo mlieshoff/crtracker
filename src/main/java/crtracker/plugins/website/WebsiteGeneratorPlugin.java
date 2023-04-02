@@ -132,7 +132,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         configurationService.getConfig().getProperty("ftp.server.folder") + "/index.html",
         website
     );
-    pluginManager.fire(new AlertPluginEvent("Website generated and uploaded."));
+    eventBus.fire(new AlertPluginEvent("Website generated and uploaded."));
   }
 
   public void rankThem(List<HighscoreEntry> list) {
@@ -163,7 +163,8 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     }
   }
 
-  private String generateSite(List<HighscoreEntry> model, List<HighscoreEntry> tournamentModel, List<HighscoreEntry> warModel) {
+  private String generateSite(List<HighscoreEntry> model, List<HighscoreEntry> tournamentModel,
+                              List<HighscoreEntry> warModel) {
     StringBuilder s1 = new StringBuilder();
     s1.append("<table class=\"table table-inverse table-striped\">");
     s1.append("<thead>");
@@ -299,7 +300,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         "    <h1 align=\"center\">Royal Card Forces</h1>\n" +
         "        <div class=\"container bg-dark text-muted text-center pt-3 pb-4\">\n" +
         "    <h2 align=\"center\">Willkommen in unserem Clash Royal Clan!</h2>\n" +
-        "    <h3 align=\"center\">Melde Dich an zum <a href=\"http://gg.gg/rcfdiscord\">Chat</a>!</h3>\n" +
+        "    <h3 align=\"center\">Melde Dich an zum <a href=\"https://gg.gg/rcfdiscord\">Chat</a>!</h3>\n" +
         "        <p class=\"small\">\n" +
         "            Völlig unkompliziert und anonym, per Discord, und ideal zur Kommunikation.\n" +
         "        </p>\n" +
@@ -369,7 +370,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
         "                This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it.\n"
         +
         "                <br class=\"d-none d-lg-block\">\n" +
-        "                For more information see <a href=\"http://www.supercell.com/fan-content-policy\" target=\"_blank\" rel=\"nofollow\" class=\"text-white\">Supercell’s Fan Content Policy</a>.\n"
+        "                For more information see <a href=\"https://www.supercell.com/fan-content-policy\" target=\"_blank\" rel=\"nofollow\" class=\"text-white\">Supercell’s Fan Content Policy</a>.\n"
         +
         "            </p>\n" +
         "        </div>\n" +

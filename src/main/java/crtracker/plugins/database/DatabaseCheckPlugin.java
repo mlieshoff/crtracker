@@ -37,7 +37,7 @@ public class DatabaseCheckPlugin extends AbstractPlugin {
     s.append("    text measures: ");
     s.append(measureDao.getCountTextMeasures(session));
     s.append("\n");
-    pluginManager.fire(new AlertPluginEvent(s.toString()));
+    eventBus.fire(new AlertPluginEvent(s.toString()));
   }
 
 }

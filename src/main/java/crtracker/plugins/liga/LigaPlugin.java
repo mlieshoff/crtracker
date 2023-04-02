@@ -52,7 +52,7 @@ public class LigaPlugin extends AbstractPlugin<ClanMateBattlePluginEvent> {
               rating);
           measureDao.updateNumberMeasure(session, playerTag,
               CrTrackerTypes.MEMBER_LAST_TIME_LIGA_BATTLE.getCode(), lastLigaBattleTimeMillis);
-          pluginManager.fire(new LigaMessagePluginEvent(logEntry));
+          eventBus.fire(new LigaMessagePluginEvent(logEntry));
         }
       } catch (ParseException e) {
         log.warn("error while parsing battle time", e);

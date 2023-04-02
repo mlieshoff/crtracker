@@ -39,7 +39,7 @@ public class EnvironmentCheckPlugin extends AbstractPlugin {
     s.append("* Java:\n");
     s.append(javaMemory);
     s.append("\n");
-    pluginManager.fire(new AlertPluginEvent(s.toString()));
+    eventBus.fire(new AlertPluginEvent(s.toString()));
   }
 
   private static String getJavaMemory() {

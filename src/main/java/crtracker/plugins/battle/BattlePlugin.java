@@ -31,10 +31,10 @@ public class BattlePlugin extends AbstractPlugin<BattlePluginEvent> {
       }
     }
     if (!clanMateBattles.isEmpty()) {
-      pluginManager.fire(new ClanMateBattlePluginEvent(playerTag, clanMateBattles));
+      eventBus.fire(new ClanMateBattlePluginEvent(playerTag, clanMateBattles));
     }
     if (!pvpBattles.isEmpty()) {
-      pluginManager.fire(new PvpBattlePluginEvent(playerTag, pvpBattles));
+      eventBus.fire(new PvpBattlePluginEvent(playerTag, pvpBattles));
     }
   }
 

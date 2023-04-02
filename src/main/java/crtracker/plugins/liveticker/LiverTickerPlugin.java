@@ -39,7 +39,7 @@ public class LiverTickerPlugin extends AbstractPlugin<PvpBattlePluginEvent> {
           lastBattleTimeMillis = battleTimeMillis;
           measureDao.updateNumberMeasure(session, playerTag, CrTrackerTypes.MEMBER_LAST_TIME_BATTLE.getCode(),
               lastBattleTimeMillis);
-          pluginManager.fire(new LiveTickerMessagePluginEvent(logEntry));
+          eventBus.fire(new LiveTickerMessagePluginEvent(logEntry));
         }
       } catch (ParseException e) {
         log.warn("error while parsing battle time", e);

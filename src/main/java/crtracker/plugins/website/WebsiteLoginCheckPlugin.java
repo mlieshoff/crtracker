@@ -26,7 +26,7 @@ public class WebsiteLoginCheckPlugin extends AbstractPlugin {
   }
 
   @Override
-  public void runIntern(Session session) throws Exception {
+  public void runIntern(Session session) {
     String loginUrl = configurationService.getConfig().getProperty("website.provider.url") + "login";
     Crawler2 crawler2 = new Crawler2();
     List<String> problems = new ArrayList<>();
@@ -61,9 +61,9 @@ public class WebsiteLoginCheckPlugin extends AbstractPlugin {
       }
     }
     if (problems.isEmpty()) {
-      pluginManager.fire(new AlertPluginEvent("Successful login to lima-city."));
+      eventBus.fire(new AlertPluginEvent("Successful login to lima-city."));
     } else {
-      pluginManager.fire(new AlertPluginEvent("Problems while login to lima-city:\n" + problems));
+      eventBus.fire(new AlertPluginEvent("Problems while login to lima-city:\n" + problems));
     }
   }
 

@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class DataPlugin extends AbstractPlugin {
+public class DataPlugin extends AbstractPlugin<DataPluginEvent> {
 
   private ApiWrapper apiWrapper;
 
@@ -31,12 +31,12 @@ public class DataPlugin extends AbstractPlugin {
     apiWrapper = configurationService.createApiWrapper();
     ClanResponse clanResponse = apiWrapper.getClanData(clanTag);
     clanResponse.getMemberList().forEach(member -> {
-      pluginManager.fire(new ClanMemberPluginEvent(member));
-      pluginManager.fire(new BattlePluginEvent(member, apiWrapper.getBattleLogFor(member.getTag())));
+      eventBus.fire(new ClanMemberPluginEvent(member));
+      eventBus.fire(new BattlePluginEvent(member, apiWrapper.getBattleLogFor(member.getTag())));
     });
-    pluginManager.fire(new RiverRacePluginEvent(apiWrapper.getCurrentClanRiverRace(clanTag)));
-    pluginManager.fire(new RiverRaceLogPluginEvent(apiWrapper.getRiverRaceLog(clanTag)));
-    pluginManager.fire(new FluctuationPluginEvent(clanResponse.getMemberList()));
+    eventBus.fire(new RiverRacePluginEvent(apiWrapper.getCurrentClanRiverRace(clanTag)));
+    eventBus.fire(new RiverRaceLogPluginEvent(apiWrapper.getRiverRaceLog(clanTag)));
+    eventBus.fire(new FluctuationPluginEvent(clanResponse.getMemberList()));
   }
 
 }
