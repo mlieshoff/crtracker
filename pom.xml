@@ -44,7 +44,7 @@
     </licenses>
 
     <properties>
-        <java.version>20</java.version>
+        <java.version>21</java.version>
         <start-class>crtracker.CrTrackerServerApp</start-class>
     </properties>
 
@@ -53,7 +53,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -81,15 +81,6 @@
                         <version>1.8.1</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.3.5.RELEASE</version>
-                <configuration>
-                    <mainClass>${start-class}</mainClass>
-                    <layout>ZIP</layout>
-                </configuration>
             </plugin>
         </plugins>
         <extensions>
@@ -181,13 +172,19 @@
         <dependency>
             <groupId>jcrapi2</groupId>
             <artifactId>jcrapi2</artifactId>
-            <version>2.0.2</version>
+            <version>4.0.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>supercell-api-wrapper-essentials</groupId>
+            <artifactId>supercell-api-wrapper-essentials</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
@@ -259,7 +256,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
 
@@ -304,7 +301,17 @@
 
     <repositories>
         <repository>
-            <id>mlieshoff-jcrapi2</id>
+            <id>packagecloud-supercell-api-wrapper-essentials</id>
+            <url>https://packagecloud.io/mlieshoff/supercell-api-wrapper-essentials/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>packagecloud-jcrapi2</id>
             <url>https://packagecloud.io/mlieshoff/jcrapi2/maven2</url>
             <releases>
                 <enabled>true</enabled>

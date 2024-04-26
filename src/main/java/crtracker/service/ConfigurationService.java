@@ -61,7 +61,7 @@ public class ConfigurationService {
     configuration.addAnnotatedClass(RunningChallenge.class);
     configuration.setProperty("hibernate.connection.driver_class", config.getProperty("database.driver"));
     configuration.setProperty("hibernate.connection.url", config.getProperty("database.url"));
-    configuration.setProperty("hibernate.connection.dialect", config.getProperty("database.dialect"));
+    configuration.setProperty("hibernate.dialect", config.getProperty("database.dialect"));
     configuration.setProperty("hibernate.connection.username", credentials.getProperty("database.username"));
     configuration.setProperty("hibernate.connection.password", credentials.getProperty("database.password"));
     configuration.setProperty("hibernate.show_sql", config.getProperty("database.show.sql"));

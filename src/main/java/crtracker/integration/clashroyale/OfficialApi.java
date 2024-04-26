@@ -14,7 +14,7 @@ import jcrapi2.api.intern.clans.riverracelog.RiverRaceLogResponse;
 import jcrapi2.api.intern.players.PlayerApi;
 import jcrapi2.api.intern.players.battlelog.BattleLogRequest;
 import jcrapi2.api.intern.players.battlelog.BattleLogResponse;
-import jcrapi2.connector.StandardConnector;
+import supercell.api.wrapper.essentials.connector.StandardConnector;
 
 public class OfficialApi {
 

@@ -48,7 +48,7 @@ public class CipherUtil {
     byte[] encryptedFile = FileUtils.readFileToByteArray(new File(credentialsFilename));
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     decryptOrEncrypt(cipher, Cipher.DECRYPT_MODE, new ByteArrayInputStream(encryptedFile), byteArrayOutputStream);
-    String decryptedFile = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+    String decryptedFile = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     credentialsProperties.load(new ByteArrayInputStream(decryptedFile.getBytes(StandardCharsets.UTF_8)));
   }
 
@@ -70,7 +70,6 @@ public class CipherUtil {
     SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
     SecretKey desKey = skf.generateSecret(dks);
     Cipher cipher = Cipher.getInstance("DES");
-    cipher.init(Cipher.DECRYPT_MODE, desKey);
     if (mode == Cipher.ENCRYPT_MODE) {
       cipher.init(Cipher.ENCRYPT_MODE, desKey);
       copy(new CipherInputStream(inputStream, cipher), outputStream);
