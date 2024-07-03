@@ -21,42 +21,22 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author Michael Lieshoff
  */
 @Table(name = "measure_texts")
 @Entity
+@Getter
+@Setter
+@ToString
 public class TextMeasure {
 
-    @EmbeddedId
-    private MeasureId measureId;
+  @EmbeddedId private MeasureId measureId;
 
-    @Column(name = "value")
-    protected String value;
-
-    public MeasureId getMeasureId() {
-        return measureId;
-    }
-
-    public void setMeasureId(MeasureId measureId) {
-        this.measureId = measureId;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "TextMeasure{" +
-                "measureId=" + measureId +
-                ", value='" + value + '\'' +
-                '}';
-    }
-
+  @Column(name = "value")
+  private String value;
 }

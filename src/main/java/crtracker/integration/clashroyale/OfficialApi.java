@@ -14,6 +14,8 @@ import jcrapi2.api.intern.clans.riverracelog.RiverRaceLogResponse;
 import jcrapi2.api.intern.players.PlayerApi;
 import jcrapi2.api.intern.players.battlelog.BattleLogRequest;
 import jcrapi2.api.intern.players.battlelog.BattleLogResponse;
+import jcrapi2.api.intern.players.info.PlayerRequest;
+import jcrapi2.api.intern.players.info.PlayerResponse;
 import supercell.api.wrapper.essentials.connector.StandardConnector;
 
 public class OfficialApi {
@@ -44,6 +46,11 @@ public class OfficialApi {
   public RiverRaceLogResponse getRiverRaceLog(String clanTag)
       throws ExecutionException, InterruptedException, TimeoutException {
     return clanApi.getRiverRaceLog(RiverRaceLogRequest.builder(clanTag).build()).get(10, TimeUnit.SECONDS);
+  }
+
+  public PlayerResponse getPlayer(String playerTag)
+      throws ExecutionException, InterruptedException, TimeoutException {
+    return playerApi.findByTag(PlayerRequest.builder(playerTag).build()).get(10, TimeUnit.SECONDS);
   }
 
 }

@@ -22,15 +22,17 @@ public class BasicChallengeHandler {
     CrTrackerTypes crTrackerTypes = getCrTrackerType(challengeDefinition);
     StringMeasure members = measureDao.getCurrentStringMeasure(session, CrTrackerTypes.CLAN_MEMBERS, clanTag);
     List<SummarizeNumberEntry> model = new ArrayList<>();
-    for (String memberTag : members.getValue().split(",")) {
-      NumberMeasure contributionMeasure = measureDao
-          .getLastNumberMeasure(session, crTrackerTypes, memberTag, activationRange.getLeft(),
-              activationRange.getRight());
-      long contribution = 0;
-      if (contributionMeasure != null) {
-        contribution = contributionMeasure.getValue();
+    if (members != null) {
+      for (String memberTag : members.getValue().split(",")) {
+        NumberMeasure contributionMeasure = measureDao
+                .getLastNumberMeasure(session, crTrackerTypes, memberTag, activationRange.getLeft(),
+                        activationRange.getRight());
+        long contribution = 0;
+        if (contributionMeasure != null) {
+          contribution = contributionMeasure.getValue();
+        }
+        model.add(new SummarizeNumberEntry(memberTag, contribution));
       }
-      model.add(new SummarizeNumberEntry(memberTag, contribution));
     }
     model.sort((o1, o2) -> {
       if (challengeDefinition.getChallengeSummaryType() == ChallengeSummaryType.TOP.getCode()) {
@@ -51,7 +53,7 @@ public class BasicChallengeHandler {
     } else if ("INTERN_TOURNAMENT".equalsIgnoreCase(challengeDefinition.getObjectives())) {
       return CrTrackerTypes.INTERN_TOURNAMENT;
     }
-    throw new IllegalStateException("cannot fing cr tracker type for: " + challengeDefinition);
+    throw new IllegalStateException("cannot find cr tracker type for: " + challengeDefinition);
   }
 
   private void rankThem(List<SummarizeNumberEntry> list) {

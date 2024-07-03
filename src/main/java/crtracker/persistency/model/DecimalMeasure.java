@@ -21,42 +21,22 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author Michael Lieshoff
  */
 @Table(name = "measure_numbers")
 @Entity
+@Getter
+@Setter
+@ToString
 public class DecimalMeasure {
 
-    @EmbeddedId
-    private MeasureId measureId;
+  @EmbeddedId private MeasureId measureId;
 
-    @Column(name = "value")
-    protected Double value;
-
-    public MeasureId getMeasureId() {
-        return measureId;
-    }
-
-    public void setMeasureId(MeasureId measureId) {
-        this.measureId = measureId;
-    }
-
-    public Double getValue() {
-        return value;
-    }
-
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "DecimalMeasure{" +
-                "measureId=" + measureId +
-                ", value='" + value + '\'' +
-                '}';
-    }
-
+  @Column(name = "value")
+  private Double value;
 }

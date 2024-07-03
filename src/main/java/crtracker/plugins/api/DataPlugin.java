@@ -1,5 +1,7 @@
 package crtracker.plugins.api;
 
+import crtracker.plugins.progress.PlayerProgressPluginEvent;
+import jcrapi2.api.intern.players.info.PlayerResponse;
 import org.hibernate.Session;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,13 +32,20 @@ public class DataPlugin extends AbstractPlugin<DataPluginEvent> {
     String clanTag = configurationService.getClanTag();
     apiWrapper = configurationService.createApiWrapper();
     ClanResponse clanResponse = apiWrapper.getClanData(clanTag);
-    clanResponse.getMemberList().forEach(member -> {
-      eventBus.fire(new ClanMemberPluginEvent(member));
-      eventBus.fire(new BattlePluginEvent(member, apiWrapper.getBattleLogFor(member.getTag())));
-    });
+    clanResponse
+        .getMemberList()
+        .forEach(
+            member -> {
+              String memberTag = member.getTag();
+              eventBus.fire(new ClanMemberPluginEvent(member));
+              eventBus.fire(new BattlePluginEvent(member, apiWrapper.getBattleLogFor(memberTag)));
+              PlayerResponse playerResponse = apiWrapper.getPlayer(memberTag);
+              eventBus.fire(
+                  new PlayerProgressPluginEvent(
+                      playerResponse.getTag(), playerResponse.getProgress()));
+            });
     eventBus.fire(new RiverRacePluginEvent(apiWrapper.getCurrentClanRiverRace(clanTag)));
     eventBus.fire(new RiverRaceLogPluginEvent(apiWrapper.getRiverRaceLog(clanTag)));
     eventBus.fire(new FluctuationPluginEvent(clanResponse.getMemberList()));
   }
-
 }

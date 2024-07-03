@@ -5,6 +5,7 @@ import jcrapi2.api.intern.clans.currentriverrace.CurrentRiverRaceResponse;
 import jcrapi2.api.intern.clans.info.ClanResponse;
 import jcrapi2.api.intern.clans.riverracelog.RiverRaceLogResponse;
 import jcrapi2.api.intern.players.battlelog.BattleLogResponse;
+import jcrapi2.api.intern.players.info.PlayerResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -78,6 +79,21 @@ public class ApiWrapper {
         return officialApi.getRiverRaceLog(clanTag);
       } catch (Exception ex) {
         log.error("exception while getting river race log [{}]...", officialApiUrl, e);
+        throw new IllegalStateException(e);
+      }
+    }
+  }
+
+  public PlayerResponse getPlayer(String playerTag) {
+    try {
+      log.info("try get player data from official api...");
+      return proxiedApi.getPlayer(playerTag);
+    } catch (Exception e) {
+      log.error("catched exception while getting player [{}]...", proxyApiUrl, e);
+      try {
+        return officialApi.getPlayer(playerTag);
+      } catch (Exception ex) {
+        log.error("exception while getting player [{}]...", officialApiUrl, e);
         throw new IllegalStateException(e);
       }
     }

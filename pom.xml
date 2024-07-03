@@ -172,7 +172,7 @@
         <dependency>
             <groupId>jcrapi2</groupId>
             <artifactId>jcrapi2</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.8</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>supercell-api-wrapper-essentials</groupId>
             <artifactId>supercell-api-wrapper-essentials</artifactId>
-            <version>1.0.1</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>

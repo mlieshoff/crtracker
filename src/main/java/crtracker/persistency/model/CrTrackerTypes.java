@@ -21,7 +21,6 @@ package crtracker.persistency.model;
  * @author Michael Lieshoff
  */
 public enum CrTrackerTypes implements MeasureType {
-
   ID(-1),
   CLAN_MEMBERS(1),
   CLAN_DONATIONS(2),
@@ -38,6 +37,12 @@ public enum CrTrackerTypes implements MeasureType {
   MEMBER_RIVER_WARS_SHIP_REPAIRPOINTS(13),
   MEMBER_RIVER_WARS_FAME(14),
   MEMBER_LAST_10_RIVER_WARS_FAME(15),
+  GOBLIN_ROAD_CURRENT_TROPHIES(16),
+  GOBLIN_ROAD_BEST_TROPHIES(17),
+  HIGHSCORE_RANKING_WEEKLY(18),
+  HIGHSCORE_RANKING_TOURNAMENT(19),
+  HIGHSCORE_RANKING_WAR(20),
+  HIGHSCORE_RANKING_GOBLIN_ROAD_CURRENT(21),
   ;
 
   private final int code;
@@ -50,5 +55,4 @@ public enum CrTrackerTypes implements MeasureType {
   public int getCode() {
     return code;
   }
-
 }

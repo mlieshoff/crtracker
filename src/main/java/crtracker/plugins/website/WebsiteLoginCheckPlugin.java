@@ -20,21 +20,25 @@ import crtracker.plugins.messaging.AlertPluginEvent;
 @Service
 public class WebsiteLoginCheckPlugin extends AbstractPlugin {
 
-  @Scheduled(initialDelay = 60000, fixedDelayString = "#{new Double((T(java.lang.Math).random() + 1) * 24).intValue() * (60000 * 60)}")
+  @Scheduled(
+      initialDelay = 60000,
+      fixedDelayString =
+          "#{new Double((T(java.lang.Math).random() + 1) * 24).intValue() * (60000 * 60)}")
   public void run() {
     super.run();
   }
 
   @Override
   public void runIntern(Session session) {
-    String loginUrl = configurationService.getConfig().getProperty("website.provider.url") + "login";
+    String loginUrl =
+        configurationService.getConfig().getProperty("website.provider.url") + "login";
     Crawler2 crawler2 = new Crawler2();
     List<String> problems = new ArrayList<>();
     Response response = crawler2.get(GetRequest.builder().uri(loginUrl).build());
+    String content = response.getString("UTF-8");
     if (response.isError()) {
       problems.add("Error while get login page: " + response.getStatusCode());
     } else {
-      String content = response.getString("UTF-8");
       String csrfParam = getMetaContent("csrf-param", content);
       if (isBlank(csrfParam)) {
         problems.add("'csrf-param' could not found!");
@@ -43,17 +47,26 @@ public class WebsiteLoginCheckPlugin extends AbstractPlugin {
         if (isBlank(csrfContent)) {
           problems.add("'csrf-token' could not found!");
         } else {
-          response = crawler2.post(StringPostRequest.builder().uri(loginUrl)
-              .param("utf8", "✓")
-              .param(csrfParam, csrfContent)
-              .param("user_session[username]",
-                  configurationService.getCredentials().getProperty("website.provider.username"))
-              .param("user_session[password]",
-                  configurationService.getCredentials().getProperty("website.provider.password"))
-              .param("user_session[remember_me]", "0")
-              .param("commit", "Login")
-              .header("content-type", "application/x-www-form-urlencoded")
-              .build());
+          response =
+              crawler2.post(
+                  StringPostRequest.builder()
+                      .uri(loginUrl)
+                      .param("utf8", "✓")
+                      .param(csrfParam, csrfContent)
+                      .param(
+                          "user_session[username]",
+                          configurationService
+                              .getCredentials()
+                              .getProperty("website.provider.username"))
+                      .param(
+                          "user_session[password]",
+                          configurationService
+                              .getCredentials()
+                              .getProperty("website.provider.password"))
+                      .param("user_session[remember_me]", "0")
+                      .param("commit", "Login")
+                      .header("content-type", "application/x-www-form-urlencoded")
+                      .build());
           if (response.isError()) {
             problems.add("Error while doing login: " + response.getStatusCode());
           }
@@ -69,9 +82,10 @@ public class WebsiteLoginCheckPlugin extends AbstractPlugin {
 
   private String getMetaContent(String metaName, String content) {
     AtomicReference<String> value = new AtomicReference<>();
-    TextProcessing.builder().one("name=\"" + metaName + "\" content=\"", "\"", value::set).build()
+    TextProcessing.builder()
+        .one("name=\"" + metaName + "\" content=\"", "\"", value::set)
+        .build()
         .start(content);
     return value.get();
   }
-
 }
