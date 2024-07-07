@@ -1,19 +1,8 @@
 package crtracker.plugins.website;
 
+import static crtracker.persistency.model.CrTrackerTypes.*;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.Session;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import crtracker.persistency.Role;
 import crtracker.persistency.dao.MeasureDao;
@@ -25,7 +14,17 @@ import crtracker.plugin.AbstractPlugin;
 import crtracker.plugins.messaging.AlertPluginEvent;
 import crtracker.service.FtpService;
 import crtracker.util.CipherUtil;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.Session;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 @Service
 public class WebsiteGeneratorPlugin extends AbstractPlugin {
@@ -134,16 +133,16 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     }
 
     weeklyModel.sort((o1, o2) -> Long.compare(o2.getGreatestValue(), o1.getGreatestValue()));
-    rankThem(session, CrTrackerTypes.HIGHSCORE_RANKING_WEEKLY, weeklyModel);
+    rankThem(session, HIGHSCORE_RANKING_WEEKLY, weeklyModel);
 
     tournamentModel.sort((o1, o2) -> Long.compare(o2.getValue1(), o1.getValue1()));
-    rankThem(session, CrTrackerTypes.HIGHSCORE_RANKING_TOURNAMENT, tournamentModel);
+    rankThem(session, HIGHSCORE_RANKING_TOURNAMENT, tournamentModel);
 
     warModel.sort((o1, o2) -> Long.compare(o2.getValue1(), o1.getValue1()));
-    rankThem(session, CrTrackerTypes.HIGHSCORE_RANKING_WAR, warModel);
+    rankThem(session, HIGHSCORE_RANKING_WAR, warModel);
 
     goblinRoadModel.sort((o1, o2) -> Long.compare(o2.getValue1(), o1.getValue1()));
-    rankThem(session, CrTrackerTypes.HIGHSCORE_RANKING_GOBLIN_ROAD_CURRENT, goblinRoadModel);
+    rankThem(session, HIGHSCORE_RANKING_GOBLIN_ROAD_CURRENT, goblinRoadModel);
 
     String website = generateSite(weeklyModel, tournamentModel, warModel, goblinRoadModel);
 
@@ -158,51 +157,81 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
   }
 
   public void rankThem(Session session, CrTrackerTypes crTrackerTypes, List<HighscoreEntry> list) {
+    Map<String, Long> previousRankings =
+        loadPreviousRanks(
+            session,
+            crTrackerTypes,
+            list.stream()
+                .map(highscoreEntry -> highscoreEntry.memberTag)
+                .collect(Collectors.toList()));
     Map<String, Long> oldRankings =
-        loadRanks(
+        loadOldRanks(
             session,
             crTrackerTypes,
             list.stream()
                 .map(highscoreEntry -> highscoreEntry.memberTag)
                 .collect(Collectors.toList()));
     int visual = 1;
-    HighscoreEntry oldUserData = null;
+    HighscoreEntry previousUserData = null;
     for (HighscoreEntry userData : list) {
-      if (oldUserData != null && oldUserData.getGreatestValue() != userData.getGreatestValue()) {
+      if (previousUserData != null
+          && previousUserData.getGreatestValue() != userData.getGreatestValue()) {
         visual++;
       }
       userData.setRank(visual);
-      Long oldRank = oldRankings.get(userData.memberTag);
-      if (oldRank != null) {
-        if (oldRank < userData.getRank()) {
+      Long previousRank = previousRankings.get(userData.memberTag);
+      if (previousRank != null) {
+        if (previousRank < userData.getRank()) {
           userData.setRankChange(-1);
-        } else if (oldRank > userData.getRank()) {
+        } else if (previousRank > userData.getRank()) {
           userData.setRankChange(1);
+        } else {
+          Long oldRank = oldRankings.get(userData.memberTag);
+          if (oldRank != null) {
+            if (oldRank < userData.getRank()) {
+              userData.setRankChange(-1);
+            } else if (oldRank > userData.getRank()) {
+              userData.setRankChange(1);
+            }
+          }
         }
       }
-      oldUserData = userData;
+      previousUserData = userData;
     }
     saveRanks(session, crTrackerTypes, list);
   }
 
-  private Map<String, Long> loadRanks(
-          Session session, CrTrackerTypes crTrackerTypes, List<String> playerTags) {
+  private Map<String, Long> loadPreviousRanks(
+      Session session, CrTrackerTypes crTrackerTypes, List<String> playerTags) {
     Map<String, Long> map = new HashMap<>();
     for (String playerTag : playerTags) {
-      NumberMeasure measureRank =
-              measureDao.getCurrentNumberMeasure(session, crTrackerTypes, playerTag);
-      if (measureRank != null) {
-        map.put(playerTag, measureRank.getValue());
+      NumberMeasure numberMeasure =
+          measureDao.getCurrentNumberMeasure(session, crTrackerTypes, playerTag);
+      if (numberMeasure != null) {
+        map.put(playerTag, numberMeasure.getValue());
+      }
+    }
+    return map;
+  }
+
+  private Map<String, Long> loadOldRanks(
+      Session session, CrTrackerTypes crTrackerTypes, List<String> playerTags) {
+    Map<String, Long> map = new HashMap<>();
+    for (String playerTag : playerTags) {
+      List<NumberMeasure> lastMeasureRanks =
+          measureDao.getLastNumberMeasures(session, crTrackerTypes, playerTag, 2);
+      if (lastMeasureRanks.size() > 1) {
+        map.put(playerTag, lastMeasureRanks.get(1).getValue());
       }
     }
     return map;
   }
 
   private void saveRanks(
-          Session session, CrTrackerTypes crTrackerTypes, List<HighscoreEntry> model) {
+      Session session, CrTrackerTypes crTrackerTypes, List<HighscoreEntry> model) {
     for (HighscoreEntry highscoreEntry : model) {
       measureDao.updateNumberMeasure(
-              session, highscoreEntry.memberTag, crTrackerTypes.getCode(), highscoreEntry.rank);
+          session, highscoreEntry.memberTag, crTrackerTypes.getCode(), highscoreEntry.rank);
     }
   }
 
