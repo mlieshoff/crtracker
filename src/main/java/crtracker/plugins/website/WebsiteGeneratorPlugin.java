@@ -87,6 +87,8 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
       NumberMeasure goblinRoadCurrentTrophiesMeasure =
           measureDao.getCurrentNumberMeasure(
               session, CrTrackerTypes.GOBLIN_ROAD_CURRENT_TROPHIES, entry.getKey());
+      NumberMeasure goblinRoadBestTrophiesMeasure =
+          measureDao.getCurrentNumberMeasure(session, GOBLIN_ROAD_BEST_TROPHIES, entry.getKey());
 
       Date joiningDate = idMeasure.getMeasureId().getModifiedAt();
 
@@ -119,6 +121,9 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
               ? goblinRoadCurrentTrophiesMeasure.getValue()
               : 0;
 
+      long goblinBestTrophies =
+          goblinRoadBestTrophiesMeasure != null ? goblinRoadBestTrophiesMeasure.getValue() : 0;
+
       weeklyModel.add(
           new HighscoreEntry(
               entry.getKey(), entry.getValue(), donations, fame, repairPoints, role, joiningDate));
@@ -129,7 +134,13 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
           new HighscoreEntry(entry.getKey(), entry.getValue(), warScore, 0, 0, role, joiningDate));
       goblinRoadModel.add(
           new HighscoreEntry(
-              entry.getKey(), entry.getValue(), goblinCurrentTrophies, 0, 0, role, joiningDate));
+              entry.getKey(),
+              entry.getValue(),
+              goblinCurrentTrophies,
+              goblinBestTrophies,
+              0,
+              role,
+              joiningDate));
     }
 
     weeklyModel.sort((o1, o2) -> Long.compare(o2.getGreatestValue(), o1.getGreatestValue()));
@@ -141,7 +152,14 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
     warModel.sort((o1, o2) -> Long.compare(o2.getValue1(), o1.getValue1()));
     rankThem(session, HIGHSCORE_RANKING_WAR, warModel);
 
-    goblinRoadModel.sort((o1, o2) -> Long.compare(o2.getValue1(), o1.getValue1()));
+    goblinRoadModel.sort(
+        (o1, o2) -> {
+          int result = Long.compare(o2.getValue1(), o1.getValue1());
+          if (result == 0) {
+            result = Long.compare(o2.getValue2(), o1.getValue2());
+          }
+          return result;
+        });
     rankThem(session, HIGHSCORE_RANKING_GOBLIN_ROAD_CURRENT, goblinRoadModel);
 
     String website = generateSite(weeklyModel, tournamentModel, warModel, goblinRoadModel);
@@ -330,7 +348,7 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
             + "</html>";
     return String.format(
         template,
-        generateOneValueTable("Troph&auml;en", goblinRoadModel),
+        generateTwoValueTable("Troph&auml;en", "Max", goblinRoadModel),
         generateOneValueTable("Kronen", tournamentModel),
         new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()),
         generateWeeklyTable(weeklyModel),
@@ -388,6 +406,53 @@ public class WebsiteGeneratorPlugin extends AbstractPlugin {
       s.append("</td>");
       s.append("<td>");
       s.append(format.format(highscoreEntry.getValue1()));
+      s.append("</td>");
+      s.append("</tr>");
+    }
+    s.append("</tbody>");
+    s.append("</table>");
+    return s.toString();
+  }
+
+  private String generateTwoValueTable(
+      String valueName1, String valueName2, List<HighscoreEntry> model) {
+    StringBuilder s = new StringBuilder();
+    s.append("<table class=\"table table-inverse table-striped\">");
+    s.append("<thead>");
+    s.append("<tr>");
+    s.append("<th>");
+    s.append("#");
+    s.append("</th>");
+    s.append("<th>");
+    s.append("Nick");
+    s.append("</th>");
+    s.append("<th>");
+    s.append(valueName1);
+    s.append("</th>");
+    s.append("<th>");
+    s.append(valueName2);
+    s.append("</th>");
+    s.append("</tr>");
+    s.append("</thead>");
+    s.append("<tbody>");
+    for (HighscoreEntry highscoreEntry : model) {
+      s.append("<tr>");
+      s.append("<th scope=\"row\">");
+      s.append(highscoreEntry.getRank());
+      s.append(".");
+      s.append(getRankingSign(highscoreEntry));
+      s.append("</th>");
+      s.append("<td>");
+      s.append(
+          String.format(
+              "<a class=\"h4\" href=\"https://spy.deckshop.pro/player/%s\">%s</a>",
+              highscoreEntry.getMemberTag().replace("#", ""), highscoreEntry.getMemberName()));
+      s.append("</td>");
+      s.append("<td>");
+      s.append(format.format(highscoreEntry.getValue1()));
+      s.append("</td>");
+      s.append("<td>");
+      s.append(format.format(highscoreEntry.getValue2()));
       s.append("</td>");
       s.append("</tr>");
     }
